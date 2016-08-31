@@ -1,0 +1,36 @@
+create table person (
+    person_id serial,
+    action_on timestamp without time zone,
+    action_by character varying,
+    record_comment character varying,
+    inserted_on date DEFAULT ('now'::text)::date,
+    inserted_by character varying,
+    SSN character varying,
+    last_name character varying,
+    first_name character varying,
+    middle_name character varying,
+    address1 character varying,
+    address2 character varying,
+    city character varying,
+    state character varying,
+    zip character varying,
+    ln_soundex character varying,
+    dob date,
+    deceased smallint,
+    deceased_date date,
+    sex_male smallint  ,
+    comments character varying,
+    refused smallint,
+    refused_date date,
+    double_entered smallint,
+    bad_address smallint,
+    bad_address_date date,
+    NoOtherContact smallint,
+    sex_female smallint,
+    gender_calcd character varying,
+    source_gender_calcd character varying,
+    constraint person_pkey PRIMARY KEY (person_id)
+);
+ALTER TABLE person
+    OWNER TO informatics;
+GRANT ALL ON TABLE person TO informatics;

@@ -1,3 +1,7 @@
+create function update_findings()
+returns void as 
+$BODY$
+begin
 update findings set proximal_serrated = get_proximal_serrated(event_id) where id < 50000;
 update findings set proximal_serrated = get_proximal_serrated(event_id) where id >= 50000;
 
@@ -21,3 +25,7 @@ update findings set diagnostic = get_diagnostic(colo_id) where id >= 50000;
 
 update findings set eligible = get_eligible(colo_id) where id < 50000;
 update findings set eligible = get_eligible(colo_id) where id >= 50000;
+
+end;
+$BODY$
+language plpgsql;

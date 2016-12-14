@@ -1,4 +1,4 @@
-insert into findings (
+﻿insert into findings (
     action_on ,
     action_by,
     inserted_by,
@@ -15,7 +15,6 @@ insert into findings (
     gender_calcd,
     end_proc_stat_rr,
     prep,
-    indication_calculated,
     ind_scr_nosym,
     ind_scr_fhxcc,
     ind_scr_fhxplp,
@@ -63,7 +62,10 @@ insert into findings (
     abort_reas_obs,
     abort_reas_sedprob,
     abort_reas_tc,
-    abort_reas_oth)
+    abort_reas_oth,
+    fup_10,
+    fup_gt10,
+    fu_form_completed)
     select
     current_timestamp,
     current_user,
@@ -81,7 +83,6 @@ insert into findings (
     pn.gender_calcd,
     end_proc_stat_rr,
     prep,
-    indication_calculated,
     ind_scr_nosym ,
     ind_scr_fhxcc ,
     ind_scr_fhxplp ,
@@ -122,13 +123,22 @@ insert into findings (
     find_oth_biop,
     find_oth_other,
     wthdrwl_time,
-    case when end_proc_stat_rr = '1' or end_proc_stat_rr = '2' then 1 else 0 end as completed,
+    case when 
+        ((end_proc_stat_rr = '1' or end_proc_stat_rr = '2' or  end_proc_stat_rr = '10' or end_proc_stat_rr = '11' or end_proc_stat_rr = '' or end_proc_stat_rr = '99') and
+        abort_reas_obs != '1' and
+        abort_reas_oth != '1' and
+        abort_reas_pp != '1' and
+        abort_reas_sedprob != '1' and
+        abort_reas_tc != '1') then 1 else 0 end as completed,
     adenoma_detected,
     serrated_detected,
     abort_reas_pp,
     abort_reas_obs,
     abort_reas_sedprob,
     abort_reas_tc,
-    abort_reas_ot
+    abort_reas_oth,
+    fup_10,
+    fup_gt10,
+    fu_form_completed
     from colo c join event e on c.event_id = e.event_id join person pn on e.person_id = pn.person_id join endoscopist ed on e.endo_code = ed.endoscopist_id
-    left outer join path_report p on c.event_id = p.event_id where pn.refused = 0 and e.event_type = 'Colonoscopy' ;
+    left outer join (select * from path_report where path_report_complete = 1) as  p on c.event_id = p.event_id where pn.refused = 0 and e.event_type = 'Colonoscopy' ;

@@ -3,10 +3,10 @@ returns void as
 $BODY$
 begin
 
-  --update person_import set dob = fix_dates_1899(dob);
-  update person_import set deceased_date = fix_dates_1899(deceased_date);
-  update person_import set refused_date = fix_dates_1899(refused_date);
-  update person_import set bad_address_date = fix_dates_1899(bad_address_date);
+update person_import set dob = fix_dates2(dob);
+update person_import set deceased_date = fix_dates2(deceased_date);
+update person_import set refused_date = fix_dates2(refused_date);
+update person_import set bad_address_date = fix_dates2(bad_address_date);
 
 insert into person (
     person_id,
@@ -55,17 +55,17 @@ select
     zip,
     ln_soundex,
     cast(dob as date),
-    convert_true_false(deceased),
+    deceased,
     cast(deceased_date as date),
-    convert_true_false(sex_male),
+    sex_male,
     comments,
-    convert_true_false(refused),
+    refused,
     cast(refused_date as date),
-    convert_true_false(double_entered),
-    convert_true_false(bad_address),
+    double_entered,
+    bad_address,
     cast (bad_address_date as date),
-    convert_true_false(NoOtherContact),
-    convert_true_false(sex_female),
+    NoOtherContact,
+    sex_female,
     gender_calcd,
     source_gender_calcd 
     from person_import

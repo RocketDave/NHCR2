@@ -38,6 +38,9 @@ create table path_report (
     serrated_detected smallint,
     serr_det_manual smallint,
     gender_calcd varchar,
+    crohns_only smallint,
+    u_colitis_only smallint,
+    date_discrepancy smallint
     constraint path_pkey PRIMARY KEY (path_report_id)
 );
 ALTER TABLE colo

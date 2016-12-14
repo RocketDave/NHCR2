@@ -24,7 +24,7 @@ begin
             (ptype_ta = 1 or
             ptype_tva = 1 or
             ptype_va = 1 or
-            (hgd = 1 and (lcl_fnd_plp = 1 or lcl_susp_ca = 1)) or
+            hgd = 1 or
             n_cancer = 1 or
             n_intra_ca = 1 or
             n_inv_ca = 1 or

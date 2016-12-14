@@ -17,9 +17,10 @@ begin
                     lower(other_dx_specify) like '%hyperplastic glands%' or
                     lower(other_dx_specify) like '%hyperplastic mucosa%' or
                     lower(other_dx_specify) like '%hyperplastic-type polyp%' or
-                    lower(other_dx_specify) like '%polypoid mucosa w/hp change%') and
-                        (((p_siz = '3' or p_siz = '4') and p_loc != 'RE' and p_loc != 'SG' and p_loc != '99' and p_loc is not null) or
-                             p_siz = '5'))
+                    lower(other_dx_specify) like '%polypoid mucosa w/hp change%' or
+                    lower(other_dx_specify) like '%focal serration%') and
+                        (((p_siz = '3') and p_loc != 'RE' and p_loc != 'SG' and p_loc != '99' and p_loc is not null)
+                              or p_siz = '4' or p_siz = '5'))
             )
         ) then
             lcl_cssp = 1;

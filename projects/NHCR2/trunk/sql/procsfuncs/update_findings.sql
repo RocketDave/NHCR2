@@ -2,29 +2,20 @@ create function update_findings()
 returns void as 
 $BODY$
 begin
-update findings set proximal_serrated = get_proximal_serrated(event_id) where id < 50000;
-update findings set proximal_serrated = get_proximal_serrated(event_id) where id >= 50000;
 
-update findings set clinically_serrated = get_clinically_serrated(event_id) where id < 50000;
-update findings set clinically_serrated = get_clinically_serrated(event_id) where id >= 50000;
+update findings set proximal_serrated = get_proximal_serrated(event_id);
 
-update findings set adenoma_detected = get_adenoma_detected(event_id) where id < 50000;
-update findings set adenoma_detected = get_adenoma_detected(event_id) where id >= 50000;
+update findings set clinically_serrated = get_clinically_serrated(event_id);
 
-update findings set mydx = get_indication(colo_id) where id < 50000;
-update findings set mydx = get_indication(colo_id) where id >= 50000;
+update findings set adenoma_detected = get_adenoma_detected(event_id);
 
-update findings set screening = get_screening(colo_id) where id < 50000;
-update findings set screening = get_screening(colo_id) where id >= 50000;
+update findings set indication_calculated = get_indication(colo_id);
 
-update findings set surveillance = get_surveillance(colo_id) where id < 50000;
-update findings set surveillance = get_surveillance(colo_id) where id >= 50000;
+update findings set screening = 1 where indication_calculated = 'Screening';
+update findings set surveillance = 1 where indication_calculated = 'Surveillance';
+update findings set diagnostic = 1 where indication_calculated = 'Diagnostic';
 
-update findings set diagnostic = get_diagnostic(colo_id) where id < 50000;
-update findings set diagnostic = get_diagnostic(colo_id) where id >= 50000;
-
-update findings set eligible = get_eligible(colo_id) where id < 50000;
-update findings set eligible = get_eligible(colo_id) where id >= 50000;
+update findings set eligible = get_eligible(colo_id);
 
 end;
 $BODY$

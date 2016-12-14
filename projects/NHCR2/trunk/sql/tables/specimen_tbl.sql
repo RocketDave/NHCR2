@@ -5,7 +5,7 @@ create table specimen(
     record_comment character varying,
     inserted_on date DEFAULT ('now'::text)::date,
     inserted_by character varying,
-    path_id bigint,
+    path_report_id bigint,
     path_polyp_loc character varying,
     polyp_num character varying,
     discrepnote character varying,
@@ -15,7 +15,6 @@ create table specimen(
     site_location_cm bigint,
     site_desc character varying,
     size_mm bigint,
-    anallevel bigint,
     flg_no_path_spec smallint,
     Ptype_Carcinoid smallint,
     Ptype_Ganglio smallint,
@@ -56,7 +55,6 @@ create table specimen(
     n_cancer smallint,
     Ptype_Fibroblast smallint,
     Ptype_Lymphoid smallint,
-    flg_noQdata bigint,
     flg_assump smallint,
     flg_multis smallint,
     flg_multisites smallint,
@@ -69,12 +67,13 @@ create table specimen(
     notes character varying,
     T_Class character varying,
     N_Class character varying,
-    date_of_export date,
     y_prefix smallint,
     record_complete smallint,
     flg_size_discrep smallint,
     SAS_key_id bigint,
-    constraint path_id primary key (specimen_id)
+    aggregate_size smallint,
+    unspec_no_fragments smallint,
+    constraint specimen_id_pkey primary key (specimen_id)
 );
 alter table specimen
     owner TO informatics;

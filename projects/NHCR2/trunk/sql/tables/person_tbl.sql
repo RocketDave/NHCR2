@@ -29,6 +29,7 @@ create table person (
     sex_female smallint,
     gender_calcd character varying,
     source_gender_calcd character varying,
+    suffix character varying,
     constraint person_pkey PRIMARY KEY (person_id)
 );
 ALTER TABLE person

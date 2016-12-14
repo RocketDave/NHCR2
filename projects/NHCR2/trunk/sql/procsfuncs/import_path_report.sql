@@ -3,6 +3,8 @@ returns void as
 $BODY$
 begin
     update path_report_import set event__id_cprs = null where event__id_cprs = 0;
+    update path_report_import set procedure_type = 'Colonoscopy' where procedure_type = 'COLONOSCOPY' or procedure_type = 'colonosopy';
+    update path_report_import set procedure_type = 'Resection' where procedure_type = 'RESECTION';
 
     insert into path_report (
     path_report_id,
@@ -44,27 +46,27 @@ begin
     gender_calcd)
     select
     report_key_id,
-    mod_rec_date,
+    fix_dates2(mod_rec_date),
     mod_rec_user,
     new_rec_date,
     new_rec_user,
     event__id_cprs,
-    convert_true_false(path_report_complete),
+    path_report_complete,
     patient_id,
-    date_of_birth,
-    convert_true_false(gender),
+    fix_dates2(date_of_birth),
+    gender,
     case_no,
     procedure_type,
-    convert_true_false(consult),
-    fix_dates_1899(consult_date),
+    consult,
+    fix_dates2(consult_date),
     endoscopist_id_cprs,
-    convert_true_false(amended_path_report),
+    amended_path_report,
     pathologist_code_cprs,
     pathology_date,
     lab_code,
-    convert_true_false(no_Q_form),
-    convert_true_false(Q_form_incomplete),
-    convert_true_false(apc),
+    no_Q_form,
+    Q_form_incomplete,
+    apc,
     SAS_import_notes,
     pseudo_patient_id,
     source,
@@ -73,12 +75,12 @@ begin
     Notes,
     sas_key_id,
     pth_req_id,
-    convert_true_false(adenoma_detected),
-    convert_true_false(ad_det_manual),
-    convert_true_false(px_gender_male),
-    convert_true_false(px_gender_female),
-    convert_true_false(serrated_detected),
-    convert_true_false(serr_det_manual),
+    adenoma_detected,
+    ad_det_manual,
+    px_gender_male,
+    px_gender_female,
+    serrated_detected,
+    serr_det_manual,
     gender_calcd
     from path_report_import
     order by report_key_id;

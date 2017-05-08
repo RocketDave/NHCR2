@@ -34,7 +34,6 @@ insert into person (
     double_entered,
     bad_address,
     bad_address_date,
-    NoOtherContact,
     sex_female,
     gender_calcd,
     source_gender_calcd)
@@ -64,7 +63,6 @@ select
     double_entered,
     bad_address,
     cast (bad_address_date as date),
-    NoOtherContact,
     sex_female,
     gender_calcd,
     source_gender_calcd 

@@ -33,6 +33,7 @@ begin
     from 
         pathologist_import
     order by pathologist_id;
+    perform setval('pathologist_pathologist_id_seq', (select max(pathologist_id) from pathologist));
 end;
 $BODY$
 language plpgsql;

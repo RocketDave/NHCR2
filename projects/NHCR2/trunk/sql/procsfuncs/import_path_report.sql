@@ -14,7 +14,7 @@ begin
     inserted_by,
     event_id,
     path_report_complete,
-    patient_ID,
+    person_ID,
     date_of_birth,
     gender,
     case_no,

@@ -1,10 +1,19 @@
 ﻿create view vPathReportSrch as select
-    last_name,
-    first_name,
-    middle_name
-    to_char(date_of_birth,'yyyy-mm-dd') as date_of_birth,
-    facility_id,
-    medical_record_number,
-    from event e join person p on e.person_id = p.person_id 
-
-GRANT select on vPathReportSrch to nhcr2_rc;
+    p.person_id, 
+    p.refused,
+    e.event_date, 
+    e.event_id, 
+    e.event_type,
+    e.medical_record_number,
+    e.endo_code,
+    p.last_name, 
+    p.first_name, 
+    p.middle_name, 
+    p.dob, 
+    p.gender_calcd, 
+    b.facility_id,
+    facility_name
+    from Event e join  Person p on e.person_id = p.person_id 
+    left outer join  Batch b on e.batch_id = b.batch_id 
+    left outer join facility f on b.facility_id = f.facility_id;
+grant select on vPathreportSrch to NHCR2_rc;

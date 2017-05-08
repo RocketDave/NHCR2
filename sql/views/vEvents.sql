@@ -1,11 +1,13 @@
 ﻿create view vEvents as select
     event_id ,
-    action_on,
-    action_by,
+    e.action_on,
+    e.action_by,
     person_id ,
     event_type ,
+    e.batch_id,
+    facility_id,
     to_char(event_date,'yyyy-mm-dd') as event_date,
-    comments ,
+    e.comments ,
     patient_barcode ,
     endo_barcode ,
     medical_record_number ,
@@ -14,6 +16,5 @@
     signature_present ,
     not_approached ,
     disabled 
-    from
-        event order by event_id;
+    from event e join batch b on e.batch_id = b.batch_id order by event_id;
 grant select on vEvents to NHCR2_rc;

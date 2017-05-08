@@ -1,4 +1,5 @@
 ﻿create view vColo as select
+    colo_id,
     event_id as c_event_id,
     facility_id ,
     facility_type ,

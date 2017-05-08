@@ -3,8 +3,13 @@ returns void as
 $BODY$
 begin
 
-    --update endoscopist_import set endo_dob = fix_dates_1899(endo_dob);
-    --update endoscopist_import set endo_status_date = fix_dates_1899(endo_status_date);
+    update endoscopist_import set endo_dob = fix_dates_1899(endo_dob);
+    update endoscopist_import set endo_status_date = fix_dates_1899(endo_status_date);
+
+    update endoscopist_import set modify_date = current_date where modify_date is null;
+    update endoscopist_import set modify_user = 'unknown' where modify_user is null;
+    update endoscopist_import set create_date = current_date where create_date is null;
+    update endoscopist_import set create_user = 'unknown' where create_user is null;
 
     insert into endoscopist (
         endoscopist_id,

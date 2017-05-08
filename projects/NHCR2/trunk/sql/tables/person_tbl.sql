@@ -25,7 +25,6 @@ create table person (
     double_entered smallint,
     bad_address smallint,
     bad_address_date date,
-    NoOtherContact smallint,
     sex_female smallint,
     gender_calcd character varying,
     source_gender_calcd character varying,

@@ -64,7 +64,6 @@ create table specimen(
     flg_dx_site smallint,
     flg_dx_multis smallint,
     specimen_type character varying,
-    notes character varying,
     T_Class character varying,
     N_Class character varying,
     y_prefix smallint,
@@ -73,6 +72,7 @@ create table specimen(
     SAS_key_id bigint,
     aggregate_size smallint,
     unspec_no_fragments smallint,
+    flat_polyp smallint
     constraint specimen_id_pkey primary key (specimen_id)
 );
 alter table specimen

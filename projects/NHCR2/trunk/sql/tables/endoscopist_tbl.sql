@@ -1,10 +1,10 @@
 ﻿create table endoscopist (
     endoscopist_id serial,
-    action_on timestamp without time zone,
-    action_by character varying,
+    action_on timestamp without time zone DEFAULT ('now'::text)::timestamp not null,
+    action_by character varying DEFAULT current_user not null,
     record_comment character varying,
     inserted_on date DEFAULT ('now'::text)::date,
-    inserted_by character varying,
+    inserted_by character varying default current_user,
     endo_initials character varying,
     endo_first_name character varying,
     endo_middle_name character varying,
@@ -43,4 +43,4 @@
     endo_pseudo_name smallint,
     constraint endoscopist_pkey PRIMARY KEY (endoscopist_id)
     );
-grant select on endoscopist to NHCR2_rc;
+grant all on endoscopist to nhcr2_rc, nhcr2_staff;

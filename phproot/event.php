@@ -218,13 +218,17 @@ while($row = pg_fetch_array($result)){
         </div>
     </div>
 
-    <div class="text-center form-group row">
-        <button id="return_entry" type="button" class="btn btn-link">Return to Data Entry</button>
-    </div>
-
     <div class="text-center">
         <input type="submit" id="idsub" class="btn-primary" name="confirm_submit" value="Submit">
     </div>
+
+    <div class="text-center form-group row">
+        <button id="return_entry" type="button" class="btn btn-link">Return to Data Entry</button>
+    </div>
+    <div class="text-center form-group row">
+        <button id="return_events" type="button" class="btn btn-link">Return to Events</button>
+    </div>
+
 </div>
 </form>
 <br/>

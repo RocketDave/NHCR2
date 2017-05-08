@@ -5,6 +5,7 @@ begin
     insert into colo (
     inserted_on,
     inserted_by,
+    patient_id,
     event_id,
     facility_id,
     facility_type,
@@ -299,6 +300,7 @@ begin
     select
     to_date(create_datetime, 'yyyy/mm/dd'),
     create_user,
+    patient_id,
     visit_id,
     facility_id,
     facility_type,
@@ -590,7 +592,7 @@ begin
     convert_true_false(find_calc_cancer),
     convert_true_false(find_calc_other),
     convert_true_false(find_calc_nodata)
-    from colo_import
+    from colo_import2
     order by 
     visit_id;
 end;

@@ -1,35 +1,30 @@
 ﻿create or replace function set_pathlab(
-    in in_pathlab_id character varying,
-    in in_pathlab_name character varying,
-    in in_address1 character varying,
-    in in_address2 character varying,
-    in in_address3 character varying,
-    in in_city character varying,
-    in in_state character varying,
-    in in_zip character varying,
-    in in_fax character varying,
-    in in_status character varying,
-    in in_status_date character varying,
-    in in_implementation_date character varying,
-    in in_how_write_reports character varying,
-    in in_ctc integer,
-    in in_comments character varying,
-    in in_contact1_name character varying,
-    in in_contact1_phone character varying,
-    in in_contact1_email character varying,
-    in in_contact1_type character varying,
-    in in_contact2_name character varying,
-    in in_contact2_phone character varying,
-    in in_contact2_email character varying,
-    in in_contact2_type character varying,
-    in in_pathlab_type character varying
+    in in_path_lab_id integer,
+    in in_lab_code varchar,
+    in in_lab_name varchar,
+    in in_address1 varchar,
+    in in_address2 varchar,
+    in in_city varchar,
+    in in_state varchar,
+    in in_zip varchar,
+    in in_fax varchar,
+    in in_status varchar,
+    in in_status_date varchar,
+    in in_comments varchar,
+    in in_contact1_name varchar,
+    in in_contact1_phone varchar,
+    in in_contact1_email varchar,
+    in in_contact1_type varchar,
+    in in_contact2_name varchar,
+    in in_contact2_phone varchar,
+    in in_contact2_email varchar,
+    in in_contact2_type varchar
 )
 returns table (
-    lcl_pathlab_id character varying, 
-    lcl_message character varying) AS
+    lcl_path_lab_id varchar, 
+    lcl_message varchar) AS
 $BODY$
     declare lcl_status_date date;
-    declare lcl_implementation_date date;
 begin
 
     if (in_status_date = '') then
@@ -38,28 +33,18 @@ begin
         lcl_status_date = cast (in_status_date as date);
     end if;
 
-    if (in_implementation_date = '') then
-        lcl_implementation_date = null;
-    else
-        lcl_implementation_date = cast (in_implementation_date as date);
-    end if;
-
-    if exists(select * from pathlab where pathlab_id = in_pathlab_id) then
-        update pathlab set 
-        pathlab_name = in_pathlab_name,
-        pathlab_pseudo_name = in_pathlab_pseudo_name,
+    if exists(select * from path_lab where path_lab_id = in_path_lab_id) then
+        update path_lab set 
+        lab_code = in_lab_code,
+        lab_name = in_lab_name,
         address1 = in_address1,
         address2 = in_address2,
-        address3 = in_address3,
         city = in_city,
         state = in_state,
         zip = in_zip,
         fax = in_fax,
         status = in_status,
         status_date = lcl_status_date,
-        implementation_date = lcl_implementation_date,
-        how_write_reports = in_how_write_reports,
-        ctc = in_ctc,
         comments = in_comments,
         contact1_name = in_contact1_name,
         contact1_phone = in_contact1_phone,
@@ -68,30 +53,20 @@ begin
         contact2_name = in_contact2_name,
         contact2_phone = in_contact2_phone,
         contact2_email = in_contact2_email,
-        contact2_type = in_contact2_type,
-        contact3_name = in_contact3_name,
-        contact3_phone = in_contact3_phone,
-        contact3_email = in_contact3_email,
-        contact3_type = in_contact3_type,
-        pathlab_type  = in_pathlab_type 
-            where pathlab_id = in_pathlab_id;
+        contact2_type = in_contact2_type
+            where path_lab_id = in_path_lab_id;
     else 
-        insert into pathlab (
-        pathlab_id ,
-        pathlab_name,
-        pathlab_pseudo_name,
+        insert into path_lab (
+        lab_code,
+        lab_name,
         address1,
         address2,
-        address3,
         city,
         state,
         zip,
         fax,
         status,
         status_date,
-        implementation_date,
-        how_write_reports,
-        ctc,
         comments,
         contact1_name,
         contact1_phone,
@@ -100,29 +75,19 @@ begin
         contact2_name,
         contact2_phone,
         contact2_email,
-        contact2_type,
-        contact3_name,
-        contact3_phone,
-        contact3_email,
-        contact3_type,
-        pathlab_type
+        contact2_type
         )
         values (
-        in_pathlab_id,
-        in_pathlab_name,
-        in_pathlab_pseudo_name,
+        in_lab_code,
+        in_lab_name,
         in_address1,
         in_address2,
-        in_address3,
         in_city,
         in_state,
         in_zip,
         in_fax,
         in_status,
         lcl_status_date,
-        lcl_implementation_date,
-        in_how_write_reports,
-        in_ctc,
         in_comments,
         in_contact1_name,
         in_contact1_phone,
@@ -131,20 +96,20 @@ begin
         in_contact2_name,
         in_contact2_phone,
         in_contact2_email,
-        in_contact2_type,
-        in_contact3_name,
-        in_contact3_phone,
-        in_contact3_email,
-        in_contact3_type,
-        in_pathlab_type
+        in_contact2_type
         );
     end if;
 
-    select in_pathlab_id into lcl_pathlab_id;
+    if (in_path_lab_id = -9) then
+        select  currval('path_lab_path_lab_id_seq') into lcl_path_lab_id;
+    else
+        lcl_path_lab_id = in_path_lab_id;
+    end if;
+
     select 'Record Updated' into lcl_message;
 
     return query select 
-        lcl_pathlab_id, lcl_message;
+        lcl_path_lab_id, lcl_message;
 end;
 $BODY$
 language plpgsql

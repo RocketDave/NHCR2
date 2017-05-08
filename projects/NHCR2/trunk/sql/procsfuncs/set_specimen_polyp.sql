@@ -1,14 +1,12 @@
-﻿create or replace function set_specimen(
+﻿create or replace function set_specimen_polyp(
 in in_specimen_id integer,
 in in_path_report_id integer,
 in in_path_polyp_loc varchar,
 in in_polyp_num varchar,
 in in_discrepnote varchar,
 in in_container varchar,
-in in_fragment varchar,
 in in_other_dx_specify varchar,
 in in_site_location_cm varchar,
-in in_site_desc varchar,
 in in_size_mm integer,
 in in_flat_polyp integer,
 in in_flg_no_path_spec integer,
@@ -46,7 +44,6 @@ in in_ibd_chroncol integer,
 in in_ibd_coloth integer,
 in in_ibd_inactcol integer,
 in in_ibd_lgdysp integer,
-in in_n_intra_ca integer,
 in in_n_inv_ca integer,
 in in_n_cancer integer,
 in in_ptype_fibroblast integer,
@@ -59,23 +56,17 @@ in in_flg_assump_numpolyps integer,
 in in_flg_dx_size integer,
 in in_flg_dx_site integer,
 in in_flg_dx_multis integer,
-in in_notes varchar,
-in in_t_class varchar,
-in in_n_class varchar,
-in in_y_prefix integer,
 in in_record_complete integer,
-in in_flg_size_discrep integer)
+in in_flg_size_discrep integer,
+in in_aggregate_size integer,
+in in_unspec_no_fragments integer)
 
 returns table (
-    lcl_specimen_id integer, 
+    lcl_specimen_id bigint, 
     lcl_message varchar) AS
 $BODY$
 
 begin
-
-    if (in_specimen_id = -9) then
-        select 1 + max(specimen_id) from specimen into in_specimen_id;
-    end if;
 
     if (in_site_location_cm = '') then select null into in_site_location_cm; end if;
 
@@ -86,11 +77,9 @@ begin
             polyp_num = in_polyp_num,
             discrepnote = in_discrepnote,
             container = in_container,
-            fragment = in_fragment,
             other_dx_specify = in_other_dx_specify,
             site_location_cm = cast(in_site_location_cm as integer),
-            site_desc = in_site_desc,
-            size_mm = in_size_mm,
+            size_mm = cast(in_size_mm as integer),
             flat_polyp = in_flat_polyp,
             flg_no_path_spec = in_flg_no_path_spec,
             ptype_carcinoid = in_ptype_carcinoid,
@@ -127,7 +116,6 @@ begin
             ibd_coloth = in_ibd_coloth,
             ibd_inactcol = in_ibd_inactcol,
             ibd_lgdysp = in_ibd_lgdysp,
-            n_intra_ca = in_n_intra_ca,
             n_inv_ca = in_n_inv_ca,
             n_cancer = in_n_cancer,
             ptype_fibroblast = in_ptype_fibroblast,
@@ -140,24 +128,19 @@ begin
             flg_dx_size = in_flg_dx_size,
             flg_dx_site = in_flg_dx_site,
             flg_dx_multis = in_flg_dx_multis,
-            notes = in_notes,
-            t_class = in_t_class,
-            n_class = in_n_class,
-            y_prefix = in_y_prefix,
             record_complete = in_record_complete,
-            flg_size_discrep = in_flg_size_discrep
+            flg_size_discrep = in_flg_size_discrep,
+            aggregate_size = in_aggregate_size,
+            unspec_no_fragments = in_unspec_no_fragments
             where specimen_id = in_specimen_id;
         else insert into specimen (
-            specimen_id,
             path_report_id,
             path_polyp_loc,
             polyp_num,
             discrepnote,
             container,
-            fragment,
             other_dx_specify,
             site_location_cm,
-            site_desc,
             size_mm,
             flat_polyp,
             flg_no_path_spec,
@@ -195,7 +178,6 @@ begin
             ibd_coloth,
             ibd_inactcol,
             ibd_lgdysp,
-            n_intra_ca,
             n_inv_ca,
             n_cancer,
             ptype_fibroblast,
@@ -208,25 +190,21 @@ begin
             flg_dx_size,
             flg_dx_site,
             flg_dx_multis,
-            notes,
-            t_class,
-            n_class,
-            y_prefix,
             record_complete,
-            flg_size_discrep
+            flg_size_discrep,
+            aggregate_size,
+            unspec_no_fragments,
+            specimen_type
         )
         values (
-            in_specimen_id,
             in_path_report_id,
             in_path_polyp_loc,
             in_polyp_num,
             in_discrepnote,
             in_container,
-            in_fragment,
             in_other_dx_specify,
             cast(in_site_location_cm as integer),
-            in_site_desc,
-            in_size_mm,
+            cast(in_size_mm as integer),
             in_flat_polyp,
             in_flg_no_path_spec,
             in_ptype_carcinoid,
@@ -263,7 +241,6 @@ begin
             in_ibd_coloth,
             in_ibd_inactcol,
             in_ibd_lgdysp,
-            in_n_intra_ca,
             in_n_inv_ca,
             in_n_cancer,
             in_ptype_fibroblast,
@@ -276,19 +253,24 @@ begin
             in_flg_dx_size,
             in_flg_dx_site,
             in_flg_dx_multis,
-            in_notes,
-            in_t_class,
-            in_n_class,
-            in_y_prefix,
             in_record_complete,
-            in_flg_size_discrep
+            in_flg_size_discrep,
+            in_aggregate_size,
+            in_unspec_no_fragments,
+            'Polyp'
         );
     end if;
 
     select 'Record Updated' into lcl_message;
 
-    return query select 
-        in_specimen_id, lcl_message;
+    if (in_specimen_id = -9) then
+        select  currval('specimen_specimen_id_seq') into lcl_specimen_id;
+    else
+        lcl_specimen_id = in_specimen_id;
+    end if;
+
+    return query 
+        select lcl_specimen_id, lcl_message;
 end;
 $BODY$
 language plpgsql

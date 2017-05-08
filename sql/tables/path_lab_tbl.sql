@@ -6,7 +6,7 @@ create table path_lab (
     inserted_on date DEFAULT ('now'::text)::date,
     inserted_by varchar,
     lab_name varchar,
-    lab_code varchar,
+    lab_code varchar unique not null,
     contact1_name varchar,
     contact1_phone varchar,
     contact1_email varchar,
@@ -17,13 +17,20 @@ create table path_lab (
     contact2_type varchar,
     address1 varchar,
     address2 varchar,
+    address3 varchar,
     city varchar,
     state varchar(2),
     zip varchar,
-    request_procedure text,
-    notes smallint,
+    fax varchar,
+    request_procedure varchar,
     status varchar,
-    path_report_trigger smallint,
-    sort_path_requests_by varchar,
+    status_date date,
+    path_report_trigger varchar,
+    comments varchar,
     constraint path_lab_pkey primary key (path_lab_id)
-)
+);
+
+alter table path_lab
+    owner TO informatics;
+grant all on table path_lab to nhcr2_rc, nhcr2_staff;
+GRANT USAGE, SELECT ON SEQUENCE path_lab_path_lab_id_seq TO nhcr2_rc, nhcr2_staff;

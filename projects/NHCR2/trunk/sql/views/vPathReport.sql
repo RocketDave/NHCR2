@@ -1,19 +1,19 @@
 ﻿create view vPathReport as select
     path_report_id,
-    action_on,
-    action_by,
-    inserted_on,
-    inserted_by,
-    event_id ,
+    p.action_on,
+    p.action_by,
+    p.inserted_on,
+    p.inserted_by,
+    p.event_id ,
     path_report_complete,
-    patient_ID ,
-    to_char(date_of_birth,'yyyy-mm-dd') as date_of_birth,
+    p.person_id ,
+    to_char(date_of_birth,'yyyy-mm-dd') as dob,
     gender,
     case_no,
     procedure_type,
     consult,
     to_char(consult_date,'yyyy-mm-dd') as consult_date,
-    endoscopist_id_cprs ,
+    endoscopist_id ,
     amended_path_report,
     pathologist_code_cprs,
     to_char(pathology_date,'yyyy-mm-dd') as pathology_date,
@@ -38,7 +38,9 @@
     gender_calcd,
     crohns_only,
     u_colitis_only,
-    date_discrepancy
-    from path_report;
+    date_discrepancy,
+    b.facility_id,
+    e.endo_barcode
+    from path_report p join event e on p.event_id = e.event_id join batch b on e.batch_id = b.batch_id;
 
 GRANT select on vPathReport to nhcr2_rc;

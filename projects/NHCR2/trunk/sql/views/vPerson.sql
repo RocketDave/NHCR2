@@ -23,7 +23,6 @@ create view vPerson as select
     bad_address,
     to_char(bad_address_date,'yyyy-mm-dd') as bad_address_date,
     sex_female,
-    NoOtherContact,
     comments
     from Person;
 grant select on vPerson to NHCR2_rc;

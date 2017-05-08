@@ -21,7 +21,6 @@
     in in_endo_email character varying,
     in in_endo_dob character varying,
     in in_endo_gender_male character varying,
-    in in_endo_speciality character varying,
     in in_comments character varying,
     in in_endo_status character varying,
     in in_endo_status_date character varying)
@@ -33,7 +32,7 @@ $BODY$
 begin
 
     if (in_endo_pseudo_name = '') then
-        in_endo_pseudo_name = null;
+        select 1 + max(endo_pseudo_name) from endoscopist into in_endo_pseudo_name where endo_pseudo_name != 888 and endo_pseudo_name != 999;
     end if;
 
     if (in_endo_dob = '') then
@@ -58,20 +57,20 @@ begin
 
     if exists(select * from endoscopist where endoscopist_id =  in_endoscopist_id) then
         update endoscopist set 
-            endo_first_name = in_endo_first_name,
-            endo_middle_name = in_endo_middle_name,
-            endo_last_name = in_endo_last_name,
-            endo_name_suffix = in_endo_name_suffix,
-            endo_initials = in_endo_initials,
+            endo_first_name = initcap(lower(in_endo_first_name)),
+            endo_middle_name = initcap(lower(in_endo_middle_name)),
+            endo_last_name = initcap(lower(in_endo_last_name)),
+            endo_name_suffix = initcap(lower(in_endo_name_suffix)),
+            endo_initials = upper(in_endo_initials),
             endo_pseudo_name = cast (in_endo_pseudo_name as integer),
-            endo_degree = in_endo_degree,
-            salutation = in_salutation,
-            mail_name = in_mail_name,
-            endo_address1 = in_endo_address1,
-            endo_address2 = in_endo_address2,
-            endo_address3 = in_endo_address3,
-            endo_city = in_endo_city,
-            endo_state = in_endo_state,
+            endo_degree = upper(in_endo_degree),
+            salutation = initcap(lower(in_salutation)),
+            mail_name = initcap(lower(in_mail_name)),
+            endo_address1 = initcap(lower(in_endo_address1)),
+            endo_address2 = initcap(lower(in_endo_address2)),
+            endo_address3 = initcap(lower(in_endo_address3)),
+            endo_city = initcap(lower(in_endo_city)),
+            endo_state = upper(in_endo_state),
             endo_zip = in_endo_zip,
             endo_direct_phone = in_endo_direct_phone,
             endo_pager = in_endo_pager,
@@ -79,7 +78,6 @@ begin
             endo_email = in_endo_email,
             endo_dob = cast(in_endo_dob as date),
             endo_gender_male = cast (in_endo_gender_male as integer),
-            endo_speciality = in_endo_speciality,
             comments = in_comments,
             endo_status = in_endo_status,
             endo_status_date = cast(in_endo_status_date as date) 
@@ -107,27 +105,26 @@ begin
             endo_email,
             endo_dob,
             endo_gender_male,
-            endo_speciality,
             comments,
             endo_status,
             endo_status_date
         )
         values (
             in_endoscopist_id,
-            in_endo_first_name ,
-            in_endo_middle_name,
-            in_endo_last_name,
-            in_endo_name_suffix,
-            in_endo_initials,
+            initcap(lower(in_endo_first_name)),
+            initcap(lower(in_endo_middle_name)),
+            initcap(lower(in_endo_last_name)),
+            initcap(lower(in_endo_name_suffix)),
+            upper(in_endo_initials),
             cast(in_endo_pseudo_name as integer),
-            in_endo_degree,
-            in_salutation,
-            in_mail_name,
-            in_endo_address1,
-            in_endo_address2,
-            in_endo_address3,
-            in_endo_city,
-            in_endo_state,
+            upper(in_endo_degree),
+            initcap(lower(in_salutation)),
+            initcap(lower(in_mail_name)),
+            initcap(lower(in_endo_address1)),
+            initcap(lower(in_endo_address2)),
+            initcap(lower(in_endo_address3)),
+            initcap(lower(in_endo_city)),
+            upper(in_endo_state),
             in_endo_zip,
             in_endo_direct_phone,
             in_endo_pager,
@@ -135,7 +132,6 @@ begin
             in_endo_email,
             cast(in_endo_dob as date),
             cast(in_endo_gender_male as integer),
-            in_endo_speciality,
             in_comments,
             in_endo_status,
             cast(in_endo_status_date as date) 

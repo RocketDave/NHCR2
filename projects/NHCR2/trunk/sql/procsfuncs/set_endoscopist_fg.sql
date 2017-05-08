@@ -49,5 +49,5 @@ end;
 $BODY$
 language plpgsql
 security definer;
-grant execute on function public.set_endoscopist_fg(integer, character varying, integer, character varying, character varying,integer,integer) to NHCR2_rc; 
+grant execute on function public.set_endoscopist_fg(integer, integer, character varying, character varying,integer,integer) to NHCR2_rc; 
 

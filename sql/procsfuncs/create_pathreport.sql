@@ -59,7 +59,7 @@ begin
         lcl_event_type
     from vPathReportSrch where event_id = in_event_id;
 
-    if lcl_event_type = 'LINK' then
+    if (lcl_event_type = 'LINK') then
         lcl_no_q = 1;
     else
         lcl_no_q = 0;
@@ -101,7 +101,8 @@ begin
         gender_calcd,
         endoscopist_id,
         no_q_form,
-        q_form_incomplete)
+        q_form_incomplete,
+        procedure_type)
     values (
         lcl_path_report_id,
         in_event_id,
@@ -110,7 +111,8 @@ begin
         lcl_gender_calcd,
         lcl_endo_code,
         lcl_no_q,
-        lcl_q_form_incomplete);
+        lcl_q_form_incomplete,
+        'Colonoscopy');
 
     if  (lcl_p_loc_a != '' and lcl_p_loc_a != '99' and  lcl_p_siz_a != '' and lcl_p_siz_a != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)

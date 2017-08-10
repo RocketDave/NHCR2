@@ -39,7 +39,6 @@
     in in_ptype_fibroblast integer,
     in in_ptype_lymphoid integer,
     in in_record_complete integer,
-    in in_flg_size_discrep integer,
     in in_aggregate_size integer,
     in in_unspec_no_fragments integer)
 
@@ -93,7 +92,6 @@ begin
             ptype_fibroblast = in_ptype_fibroblast,
             ptype_lymphoid = in_ptype_lymphoid,
             record_complete = in_record_complete,
-            flg_size_discrep = in_flg_size_discrep,
             aggregate_size = in_aggregate_size,
             unspec_no_fragments = in_unspec_no_fragments
             where specimen_id = in_specimen_id;
@@ -137,7 +135,6 @@ begin
             ptype_fibroblast,
             ptype_lymphoid,
             record_complete,
-            flg_size_discrep,
             aggregate_size,
             unspec_no_fragments,
             specimen_type
@@ -182,7 +179,6 @@ begin
             in_ptype_fibroblast,
             in_ptype_lymphoid,
             in_record_complete,
-            in_flg_size_discrep,
             in_aggregate_size,
             in_unspec_no_fragments,
             'Biopsy'

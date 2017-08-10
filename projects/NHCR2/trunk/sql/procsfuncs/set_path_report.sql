@@ -32,9 +32,9 @@ begin
     select gender_calcd into lcl_gender_person from person where person_id = in_person_id;
 
     if (in_pathology_date = '') then 
-        select null into in_pathology_date;
+        select null into lcl_pathology_date;
     else
-        in_pathology_date = cast(in_pathology_date as date);
+        lcl_pathology_date = cast(in_pathology_date as date);
     end if;
     if (in_dob = '') then 
         select null into lcl_date_of_birth;

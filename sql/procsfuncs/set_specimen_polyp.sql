@@ -63,6 +63,7 @@ in in_unspec_no_fragments integer)
 
 returns table (
     lcl_specimen_id bigint, 
+    lcl_warning varchar,
     lcl_message varchar) AS
 $BODY$
 
@@ -263,6 +264,10 @@ begin
 
     select 'Record Updated' into lcl_message;
 
+    if (public.check_container(in_path_report_id, 'Polyp', in_specimen_id, in_container) = 1) then
+        select 'Duplicate container' into lcl_warning;
+    end if;
+
     if (in_specimen_id = -9) then
         select  currval('specimen_specimen_id_seq') into lcl_specimen_id;
     else
@@ -270,7 +275,7 @@ begin
     end if;
 
     return query 
-        select lcl_specimen_id, lcl_message;
+        select lcl_specimen_id, lcl_warning, lcl_message ;
 end;
 $BODY$
 language plpgsql

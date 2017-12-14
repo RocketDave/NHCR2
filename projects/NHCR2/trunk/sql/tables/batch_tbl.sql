@@ -15,7 +15,11 @@ create table batch (
     refusals_without_r integer,
     unsigned_with_r integer,
     unsigned_without_r integer,
-    orphans integer
+    orphans integer,
+    not_approached integer,
+    disabled integer,
+    language integer.
+    refusals_without_g integer,
     constraint batch_id_pkey PRIMARY KEY (batch_id)
 );
 ALTER TABLE batch

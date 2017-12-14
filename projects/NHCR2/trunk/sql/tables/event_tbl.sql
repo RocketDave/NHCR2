@@ -28,3 +28,12 @@
     endo_form_double_entered smallint,
     constraint event_id_pkey PRIMARY KEY (event_id)
 )
+
+-- Index: event_person_id_index
+
+-- DROP INDEX event_person_id_index;
+
+CREATE INDEX event_person_id_index
+  ON event
+  USING btree
+  (person_id);

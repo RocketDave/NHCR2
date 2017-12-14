@@ -305,14 +305,11 @@ GRANT ALL ON TABLE colo TO informatics;
 
 COMMENT ON TABLE colo
     IS 'Colonoscopy Form.';
--- Trigger: audit_colo on colo
 
--- DROP TRIGGER audit_colo ON colo;
+CREATE INDEX colo_event_id_index
+  ON colo
+  USING btree
+  (event_id);
 
---CREATE TRIGGER audit_colo
-    --AFTER UPDATE OR DELETE
-    --ON colo
-    --FOR EACH ROW
-    --EXECUTE PROCEDURE create_colo_audit_record();
 
 

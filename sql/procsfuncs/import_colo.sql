@@ -595,6 +595,7 @@ begin
     from colo_import2
     order by 
     visit_id;
+perform setval('colo_colo_id_seq', max(colo_id)) from colo;
 end;
 $BODY$
 language plpgsql;

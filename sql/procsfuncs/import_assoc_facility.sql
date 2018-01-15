@@ -21,6 +21,8 @@ begin
     from 
         assoc_facility_import
     order by id;
+
+    perform setval('assoc_facility_assoc_facility_id_seq', max(assoc_facility_id)) from assoc_facility;
 end;
 $BODY$
 language plpgsql;

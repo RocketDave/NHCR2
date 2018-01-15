@@ -154,6 +154,8 @@ insert into specimen (
     SAS_key_id
     from specimen_import
     order by specimen_key_id;
+
+perform setval('specimen_specimen_id_seq', max(specimen_id)) from specimen;
 end;
 $BODY$
 language plpgsql;

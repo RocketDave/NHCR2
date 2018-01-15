@@ -21,7 +21,7 @@ begin
     procedure_type,
     consult,
     consult_date,
-    endoscopist_id_cprs,
+    endoscopist_id,
     amended_path_report,
     pathologist_code_cprs,
     pathology_date,
@@ -46,23 +46,23 @@ begin
     gender_calcd)
     select
     report_key_id,
-    fix_dates2(mod_rec_date),
+    safe_cast(mod_rec_date,null::timestamp),
     mod_rec_user,
-    new_rec_date,
+    fix_dates_1899(new_rec_date),
     new_rec_user,
     event__id_cprs,
     path_report_complete,
     patient_id,
-    fix_dates2(date_of_birth),
+    safe_cast(date_of_birth,null::date),
     gender,
     case_no,
     procedure_type,
     consult,
-    fix_dates2(consult_date),
+    safe_cast(consult_date,null::date),
     endoscopist_id_cprs,
     amended_path_report,
     pathologist_code_cprs,
-    pathology_date,
+    fix_dates_1899(pathology_date),
     lab_code,
     no_Q_form,
     Q_form_incomplete,
@@ -84,6 +84,8 @@ begin
     gender_calcd
     from path_report_import
     order by report_key_id;
+
+    perform setval('path_report_path_report_id_seq', max(path_report_id)) from path_report;
 end;
 $BODY$
 language plpgsql;

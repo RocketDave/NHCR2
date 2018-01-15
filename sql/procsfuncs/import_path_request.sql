@@ -23,25 +23,27 @@ begin
     fac_requires_request)
     select
     request_id ,
-    fix_dates2(mod_rec_date),
-    mod_rec_user ,
+    safe_cast(mod_rec_date, null::timestamp),
+    mod_rec_user,
     'import from 4D',
     new_rec_date,
     new_rec_user ,
     colo_visit_id ,
-    fix_dates2(print_date),
-    fix_dates2(recvd_date),
+    safe_cast(print_date,null::date),
+    safe_cast(recvd_date,null::date),
     n_a_reason,
     notes,
     med_rec_num ,
     no_path_report ,
     path_report_id ,
     temp_last_name ,
-    fix_dates2(temp_dob) ,
+    temp_dob ,
     temp_endo_info ,
     fac_requires_request 
     from path_request_import
     order by request_id;
+
+    perform setval('path_request_path_request_id_seq', max(path_request_id)) from path_request;
 end;
 $BODY$
 language plpgsql;

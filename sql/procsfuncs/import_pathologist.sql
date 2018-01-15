@@ -1,4 +1,4 @@
-create function import_pathologist()
+﻿create function import_pathologist()
 returns void as 
 $BODY$
 begin
@@ -18,9 +18,9 @@ begin
         degree)
     select
         pathologist_id,
-        mod_rec_date,
+        fix_dates_1899(mod_rec_date),
         mod_rec_user,
-        new_rec_date,
+        fix_dates_1899(new_rec_date),
         new_rec_user,
         first_name,
         last_name ,

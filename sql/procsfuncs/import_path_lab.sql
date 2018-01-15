@@ -45,6 +45,8 @@ begin
     from 
         pathology_lab_import
     order by path_lab_id;
+
+    perform setval('path_lab_path_lab_id_seq', max(path_lab_id)) from path_lab;
 end;
 $BODY$
 language plpgsql;

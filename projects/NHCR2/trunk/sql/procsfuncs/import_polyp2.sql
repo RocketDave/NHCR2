@@ -28,9 +28,9 @@ insert into polyp2 (
     p_flat)
 select
     polyp_ii_key_id,
-    mod_rec_date,
+    fix_dates_1899(mod_rec_date),
     mod_rec_user,
-    new_rec_date,
+    fix_dates_1899(new_rec_date),
     new_rec_user,
     visit_id,
     old_polyp_id,
@@ -51,6 +51,8 @@ select
     convert_true_false(p_flat)
 from polyp2_import
 order by polyp_ii_key_id;
+
+perform setval('polyp2_polyp2_id_seq', max(polyp2_id)) from polyp2;
 end;
 $BODY$
 language plpgsql;

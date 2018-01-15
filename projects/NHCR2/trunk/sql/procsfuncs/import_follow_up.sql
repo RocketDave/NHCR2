@@ -3,7 +3,7 @@ returns void as
 $BODY$
 begin
     insert into follow_up (
-        follow_up_id,
+        fu_barcode,
         action_on,
         action_by,
         inserted_on,
@@ -39,7 +39,7 @@ begin
         teleform_batch_no)
     select
         fu_barcode,
-        to_timestamp(mod_rec_date || ' ' || to_char(mod_rec_time, 'HH24:MI:SS'),'yyyy/mm/dd hh24:mi:ss'),
+        fix_dates_1899(mod_rec_date),
         mod_rec_user,
         fix_dates_1899(new_rec_date),
         new_rec_user,
@@ -75,6 +75,7 @@ begin
     from
         follow_up_import
     order by fu_barcode;
+    perform setval('follow_up_id_seq', max(id)) from follow_up;
 end;
 $BODY$
 language plpgsql;

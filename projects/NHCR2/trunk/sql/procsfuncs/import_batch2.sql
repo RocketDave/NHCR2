@@ -3,10 +3,8 @@ returns void as
 $BODY$
 begin
 
-update batch_import set create_date = null where create_date = '12/28/1899';
-
---update batch_import set modify_date = null where modify_date = '00/00/00';
-update batch_import set create_user = null where create_user = '00/00/00';
+update batch_import set create_date = null where create_date = '12/29/1899';
+update batch_import set modify_date = null where modify_date = '12/29/1899';
 
 insert into batch (
     batch_id,

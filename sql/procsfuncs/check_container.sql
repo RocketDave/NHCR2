@@ -1,4 +1,4 @@
-create or replace function check_container (in_path_report_id integer, in_specimen_type varchar, in_specimen_id integer, in_container varchar)
+create or replace function check_container (in in_path_report_id integer, in in_specimen_type varchar, in in_specimen_id integer, in in_container varchar)
 returns integer as
 $BODY$
 declare

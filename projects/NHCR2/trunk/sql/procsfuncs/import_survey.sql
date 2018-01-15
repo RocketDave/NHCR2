@@ -4,7 +4,7 @@ $BODY$
 begin
 
 insert into survey (
-    inserted_on,
+    scan_date,
     inserted_by,
     patient_id,
     event_id,
@@ -144,13 +144,13 @@ insert into survey (
     relca_age_dad_tab
     )
     select
-    fix_dates(create_datetime),
+    safe_cast(create_datetime,null::timestamp),
     create_user,
     patient_id,
     visit_id,
     facility_id,
     crs_batch,
-    exam_date,
+    safe_cast(exam_date,null::date),
     teleform_formid,
     barcode,
     scan_batch,

@@ -45,3 +45,12 @@ create table path_report (
 ALTER TABLE colo
     OWNER TO informatics;
 GRANT ALL ON TABLE path_report TO informatics;
+
+-- Index: path_report_event_id_index
+
+-- DROP INDEX path_report_event_id_index;
+
+CREATE INDEX path_report_event_id_index
+  ON path_report
+  USING btree
+  (event_id);

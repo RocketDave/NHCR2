@@ -49,6 +49,6 @@ create table facility(
     irb_contact_name varchar,
     irb_contact_phone varchar,
     irb_contact_email varchar,
-    constraint facility_pkey PRIMARY KEY (facility_id)
+    constraint facility_pkey PRIMARY KEY (id)
 )
 grant select on facility to NHCR2_rc;

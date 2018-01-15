@@ -73,9 +73,6 @@ $BODY$
 
 begin
 
-    if (in_specimen_id = -9) then
-        select 1 + max(specimen_id) from specimen into in_specimen_id;
-    end if;
 
     if (in_site_location_cm = '') then select null into in_site_location_cm; end if;
 
@@ -148,7 +145,6 @@ begin
             flg_size_discrep = in_flg_size_discrep
             where specimen_id = in_specimen_id;
         else insert into specimen (
-            specimen_id,
             path_report_id,
             path_polyp_loc,
             polyp_num,
@@ -216,7 +212,6 @@ begin
             flg_size_discrep
         )
         values (
-            in_specimen_id,
             in_path_report_id,
             in_path_polyp_loc,
             in_polyp_num,
@@ -283,6 +278,12 @@ begin
             in_record_complete,
             in_flg_size_discrep
         );
+    end if;
+
+    if (in_specimen_id = -9) then
+        select currval('specimen_specimen_id_seq') into lcl_specimen_id;
+    else
+        lcl_specimen_id = in_specimen_id;
     end if;
 
     select 'Record Updated' into lcl_message;

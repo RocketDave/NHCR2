@@ -59,10 +59,10 @@ begin
     if exists(select * from specimen where specimen_id =  in_specimen_id) then
         update specimen set 
             path_report_id = in_path_report_id,
-            path_polyp_loc = in_path_polyp_loc,
-            polyp_num = in_polyp_num,
+            path_polyp_loc = upper(in_path_polyp_loc),
+            polyp_num = upper(in_polyp_num),
             discrepnote = in_discrepnote,
-            container = in_container,
+            container = upper(in_container),
             other_dx_specify = in_other_dx_specify,
             site_location_cm = cast(in_site_location_cm as integer),
             size_mm = in_size_mm,
@@ -154,10 +154,10 @@ begin
         )
         values (
             in_path_report_id,
-            in_path_polyp_loc,
-            in_polyp_num,
+            upper(in_path_polyp_loc),
+            upper(in_polyp_num),
             in_discrepnote,
-            in_container,
+            upper(in_container),
             in_other_dx_specify,
             cast(in_site_location_cm as integer),
             in_size_mm,

@@ -1,8 +1,9 @@
 create or replace function create_event_pathlink(
-    in_person_id integer,
-    in_event_date character varying,
-    in_patient_barcode character varying,
-    in_endo_code character varying)
+    in in_person_id integer,
+    in in_event_date character varying,
+    in in_patient_barcode character varying,
+    in in_endo_code character varying,
+    in in_facility_id character varying)
 returns table (
     lcl_batch_id integer) AS
 $BODY$
@@ -43,4 +44,4 @@ end;
 $BODY$
 language plpgsql
 security definer;
-grant execute on function public.create_event_pathlink(integer, character varying, character varying, character varying) to NHCR2_rc; 
+grant execute on function public.create_event_pathlink(integer, character varying, character varying, character varying, character varying) to NHCR2_rc; 

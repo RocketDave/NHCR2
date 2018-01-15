@@ -20,10 +20,6 @@ begin
         facility_id = in_facility_id and
         path_link = 1;
 
-    if in_event_id = -9 then
-        select 1+max(event_id) from event into in_event_id;
-    end if;
-
     if in_endo_code = '' then
         select null into lcl_endo_code;
     else
@@ -48,10 +44,10 @@ begin
         endo_code = lcl_endo_code , 
         est_exam_date = in_est_exam_date
             where event_id = in_event_id;
+        select 'Record Updated' into lcl_message;
     else 
         insert into event (
         person_id,
-        event_id,
         event_date ,
         event_type,
         batch_id,
@@ -63,7 +59,6 @@ begin
         )
         values (
         in_person_id,
-        in_event_id,
         lcl_event_date ,
         'LINK',
         lcl_batch_id,
@@ -73,10 +68,14 @@ begin
         lcl_endo_code,
         in_est_exam_date
         );
+        select 'Record Updated' into lcl_message;
     end if;
 
-    select in_event_id into lcl_event_id;
-    select 'Record Updated' into lcl_message;
+    if (in_event_id = -9) then
+        select currval('event_event_id_seq') into lcl_event_id;
+    else
+        lcl_event_id = in_event_id;
+    end if;
 
     return query select 
         lcl_event_id, lcl_message;

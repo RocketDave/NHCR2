@@ -91,11 +91,9 @@ begin
 
     select susp_ca_loc, susp_ca_siz into lcl_susp_ca_loc, lcl_susp_ca_siz from colo where event_id = in_event_id;
 
-    select 1+max(path_report_id) into lcl_path_report_id from path_report;
-
     insert into public.path_report (
-        path_report_id,
         event_id,
+        pathology_date,
         person_id,
         date_of_birth,
         gender_calcd,
@@ -104,8 +102,8 @@ begin
         q_form_incomplete,
         procedure_type)
     values (
-        lcl_path_report_id,
         in_event_id,
+        lcl_event_date,
         lcl_person_id,
         lcl_date_of_birth,
         lcl_gender_calcd,
@@ -114,37 +112,39 @@ begin
         lcl_q_form_incomplete,
         'Colonoscopy');
 
-    if  (lcl_p_loc_a != '' and lcl_p_loc_a != '99' and  lcl_p_siz_a != '' and lcl_p_siz_a != '99') then 
+    select currval('path_report_path_report_id_seq') into lcl_path_report_id;
+
+    if (lcl_p_loc_a != '99' or lcl_p_siz_a != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)
                 values (lcl_path_report_id,'Polyp',lcl_p_loc_a, 'A',1,0,cast(lcl_p_flat_a as integer)) ;
     end if;
-    if  (lcl_p_loc_b != '' and lcl_p_loc_b != '99' and  lcl_p_siz_b != '' and lcl_p_siz_b != '99') then 
+    if (lcl_p_loc_b != '99' or lcl_p_siz_b != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)
                 values (lcl_path_report_id,'Polyp',lcl_p_loc_b, 'B',1,0,cast(lcl_p_flat_b as integer)) ;
     end if;
-    if  (lcl_p_loc_a != '' and lcl_p_loc_c != '99' and  lcl_p_siz_c != '' and lcl_p_siz_c != '99') then 
+    if (lcl_p_loc_c != '99' or lcl_p_siz_c != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)
                 values (lcl_path_report_id,'Polyp',lcl_p_loc_c, 'C',1,0,cast(lcl_p_flat_c as integer)) ;
     end if;
-    if  (lcl_p_loc_d!= '' and lcl_p_loc_d!= '99' and  lcl_p_siz_d!= '' and lcl_p_siz_d!= '99') then 
+    if (lcl_p_loc_d != '99' or  lcl_p_siz_d != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)
                 values (lcl_path_report_id,'Polyp',lcl_p_loc_d, 'D',1,0,cast(lcl_p_flat_d as integer)) ;
     end if;
-    if  (lcl_p_loc_e!= '' and lcl_p_loc_e!= '99' and  lcl_p_siz_e!= '' and lcl_p_siz_e!= '99') then 
+    if (lcl_p_loc_e != '99' or lcl_p_siz_e != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)
                 values (lcl_path_report_id,'Polyp',lcl_p_loc_e, 'E',1,0,cast(lcl_p_flat_e as integer)) ;
     end if;
-    if  (lcl_p_loc_f!= '' and lcl_p_loc_f!= '99' and  lcl_p_siz_f!= '' and lcl_p_siz_f!= '99') then 
+    if (lcl_p_loc_f != '99' or lcl_p_siz_f != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)
                 values (lcl_path_report_id,'Polyp',lcl_p_loc_f, 'F',1,0,cast(lcl_p_flat_f as integer)) ;
     end if;
-    if  (lcl_p_loc_g!= '' and lcl_p_loc_g!= '99' and  lcl_p_siz_g!= '' and lcl_p_siz_g!= '99') then 
+    if (lcl_p_loc_g != '99' or lcl_p_siz_g != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump,flat_polyp)
                 values (lcl_path_report_id,'Polyp',lcl_p_loc_g, 'G',1,0,cast(lcl_p_flat_g as integer)) ;
     end if;
 
 
-    if  (lcl_susp_ca_loc != '' and lcl_susp_ca_loc != '99' and  lcl_susp_ca_siz != '' and lcl_susp_ca_siz != '99') then 
+    if (lcl_susp_ca_loc != '99' or lcl_susp_ca_siz != '99') then 
         insert into specimen (path_report_id,specimen_type,path_polyp_loc,polyp_num,flg_no_discrep,flg_assump)
                 values (lcl_path_report_id,'Suspected Cancer',lcl_susp_ca_loc, 'A',1,0) ;
     end if;

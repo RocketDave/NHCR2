@@ -6,9 +6,13 @@
     in in_entry_completed_on varchar,
     in in_refusals_with_r integer,
     in in_refusals_without_r integer,
+    in in_refusals_without_g integer,
     in in_unsigned_with_r integer,
     in in_unsigned_without_r integer,
     in in_orphans integer,
+    in in_not_approached integer,
+    in in_disabled integer,
+    in in_language integer,
     in in_comments varchar
 )
 returns table (
@@ -29,9 +33,13 @@ begin
         entry_completed_on = cast (in_entry_completed_on as date),
         refusals_with_r = in_refusals_with_r,
         refusals_without_r = in_refusals_without_r,
+        refusals_without_g = in_refusals_without_g,
         unsigned_with_r = in_unsigned_with_r,
         unsigned_without_r = in_unsigned_without_r,
         orphans = in_orphans,
+        not_approached = in_not_approached,
+        disabled = in_disabled,
+        language = in_language,
         comments = in_comments
             where batch_id = in_batch_id;
     else 
@@ -42,9 +50,13 @@ begin
         entry_completed_on,
         refusals_with_r,
         refusals_without_r,
+        refusals_without_g,
         unsigned_with_r,
         unsigned_without_r,
         orphans,
+        not_approached,
+        disabled,
+        language,
         comments
         )
         values (
@@ -54,9 +66,13 @@ begin
         cast (in_entry_completed_on as date) ,
         in_refusals_with_r,
         in_refusals_without_r,
+        in_refusals_without_g,
         in_unsigned_with_r,
         in_unsigned_without_r,
         in_orphans,
+        in_not_approached,
+        in_disabled,
+        in_language,
         in_comments
         );
     end if;
@@ -76,5 +92,5 @@ end;
 $BODY$
 language plpgsql
 security definer;
-grant execute on function public.set_batch (integer,varchar,varchar,smallint,varchar,integer,integer,integer,integer,integer,varchar) to NHCR2_rc; 
+grant execute on function public.set_batch (integer,varchar,varchar,smallint,varchar,integer,integer,integer,integer,integer,integer,integer,integer,integer,varchar) to NHCR2_rc; 
 

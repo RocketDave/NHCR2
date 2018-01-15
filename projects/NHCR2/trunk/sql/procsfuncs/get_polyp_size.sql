@@ -9,13 +9,13 @@ begin
 
     if in_size = '99' then 
         lcl_size = 'unknown';
-    elseif in_size = '1'  then 
-        lcl_size = '<5';
     elseif in_size = '2'  then 
-        lcl_size = '5-9';
+        lcl_size = '<5';
     elseif in_size = '3'  then 
-        lcl_size = '1.0-2.0';
+        lcl_size = '5-9';
     elseif in_size = '4'  then 
+        lcl_size = '1.0-2.0';
+    elseif in_size = '5'  then 
         lcl_size = '>2.0'; 
     end  if;
 

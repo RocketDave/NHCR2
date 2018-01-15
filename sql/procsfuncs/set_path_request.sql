@@ -11,9 +11,6 @@ $BODY$
 
 begin
 
-    if (in_path_request_id = -9) then
-        select 1 + max(in_path_request_id) from path_request into in_path_request_id where path_request_id != 8888 and path_request_id != 9999;
-    end if;
 
     if exists(select * from path_request where path_request_id = in_path_request_id) then
         update path_request set 
@@ -23,18 +20,22 @@ begin
             notes = in_notes
         where path_request_id = in_path_request_id;
     else insert into path_request (
-            path_request_id,
             n_a_reason,
             no_path_report,
             recvd_date,
             notes
         )
     values (
-            in_path_request_id,
             in_n_a_reason,
             in_no_path_report,
             in_recvd_date,
             in_notes);
+    end if;
+
+    if (in_path_request_id = -9) then
+        select currval('path_request_path_request_id_seq') into lcl_path_request_id;
+    else
+        lcl_path_request_id = in_path_request_id;
     end if;
 
     select 'Record Updated' into lcl_message;

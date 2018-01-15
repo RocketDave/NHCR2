@@ -12,10 +12,6 @@ $BODY$
 
 begin
 
-    if (in_endoscopist_id = -9) then
-        select 1 + max(endoscopist_id) from endoscopist into in_endoscopist_id where endoscopist_id != 8888 and endoscopist_id != 9999;
-    end if;
-
     if exists(select * from endoscopist where endoscopist_id = in_endoscopist_id) then
         update endoscopist set 
             participating = in_participating ,
@@ -25,7 +21,6 @@ begin
             steering_committee = in_steering_committee
         where endoscopist_id = in_endoscopist_id;
     else insert into endoscopist (
-        endoscopist_id,
         participating,
         main_site,
         report_handling,
@@ -33,12 +28,17 @@ begin
         steering_committee
         )
     values (
-        in_endoscopist_id,
         in_participating,
         in_main_site,
         in_report_handling,
         in_enroll_survey_done,
         in_steering_committee);
+    end if;
+
+    if (in_endoscopist_id = -9) then
+        select currval('endoscopist_endoscopist_id_seq') into lcl_endoscopist_id;
+    else
+        lcl_endoscopist_id = in_endoscopist_id;
     end if;
 
     select 'Record Updated' into lcl_message;

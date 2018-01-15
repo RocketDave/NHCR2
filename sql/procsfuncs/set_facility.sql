@@ -51,7 +51,7 @@ begin
 
     if exists(select * from facility where facility_id = in_facility_id) then
         update facility set 
-        facility_name = initcap(lower(in_facility_name)),
+        facility_name = in_facility_name,
         facility_pseudo_name = in_facility_pseudo_name,
         address1 = initcap(lower(in_address1)),
         address2 = initcap(lower(in_address2)),
@@ -114,7 +114,7 @@ begin
         )
         values (
         in_facility_id,
-        initcap(lower(in_facility_name)),
+        in_facility_name,
         in_facility_pseudo_name,
         initcap(lower(in_address1)),
         initcap(lower(in_address2)),

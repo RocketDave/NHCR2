@@ -13,10 +13,6 @@ $BODY$
 
 begin
 
-    if (in_endoscopist_id = -9) then
-        select 1 + max(endoscopist_id) from endoscopist into in_endoscopist_id where endoscopist_id != 8888 and endoscopist_id != 9999;
-    end if;
-
     if exists(select * from endoscopist where endoscopist_id = in_endoscopist_id) then
         update endoscopist set 
             endo_specialty = in_endo_specialty,
@@ -27,7 +23,6 @@ begin
             year_first_colo = in_year_first_colo
         where endoscopist_id = in_endoscopist_id;
     else insert into endoscopist (
-        endoscopist_id,
         endo_specialty,
         endo_med_grad_year,
         endo_fellowship,
@@ -36,13 +31,18 @@ begin
         year_first_colo
         )
     values (
-        in_endoscopist_id,
         in_endo_specialty,
         in_endo_med_grad_year,
         cast (in_endo_fellowship as integer),
         in_endo_fellow_grad_year,
         in_endo_fellow_discipline,
         in_year_first_colo);
+    end if;
+
+    if (in_endoscopist_id = -9) then
+        select currval('endoscopist_endoscopist_id_seq') into lcl_endoscopist_id;
+    else
+        lcl_endoscopist_id = in_endoscopist_id;
     end if;
 
     select 'Record Updated' into lcl_message;

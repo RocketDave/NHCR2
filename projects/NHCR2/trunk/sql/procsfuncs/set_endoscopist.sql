@@ -51,10 +51,6 @@ begin
        in_endo_gender_male = null;
     end if;
 
-    if (in_endoscopist_id = -9) then
-        select 1 + max(endoscopist_id) from endoscopist into in_endoscopist_id where endoscopist_id != 8888 and endoscopist_id != 9999;
-    end if;
-
     if exists(select * from endoscopist where endoscopist_id =  in_endoscopist_id) then
         update endoscopist set 
             endo_first_name = initcap(lower(in_endo_first_name)),
@@ -83,7 +79,6 @@ begin
             endo_status_date = cast(in_endo_status_date as date) 
             where endoscopist_id = cast (in_endoscopist_id as integer);
         else insert into endoscopist (
-            endoscopist_id,
             endo_first_name,
             endo_middle_name,
             endo_last_name,
@@ -110,7 +105,6 @@ begin
             endo_status_date
         )
         values (
-            in_endoscopist_id,
             initcap(lower(in_endo_first_name)),
             initcap(lower(in_endo_middle_name)),
             initcap(lower(in_endo_last_name)),
@@ -140,8 +134,14 @@ begin
 
     select 'Record Updated' into lcl_message;
 
+    if (in_endoscopist_id = -9) then
+        select currval('endoscopist_endoscopist_id_seq') into lcl_endoscopist_id;
+    else
+        lcl_endoscopist_id = in_endoscopist_id;
+    end if;
+
     return query select 
-        in_endoscopist_id, lcl_message;
+        lcl_endoscopist_id, lcl_message;
 end;
 $BODY$
 language plpgsql

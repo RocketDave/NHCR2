@@ -12,9 +12,9 @@ insert into other_name (
     last_name,
     maiden_flag)
 select
-    modify_date,
+    safe_cast(modify_date,null::timestamp),
     modify_user,
-    create_date,
+    safe_cast(create_date,null::timestamp),
     create_user,
     person_id,
     last_name,

@@ -1,4 +1,4 @@
-﻿create function import_facility()
+﻿create or replace function import_facility()
 returns void as 
 $BODY$
 begin
@@ -73,7 +73,7 @@ begin
         status,
         status_date,
         implementation_date,
-        ctc,
+        convert_true_false(ctc),
         facility_type,
         how_write_reports,
         comments,

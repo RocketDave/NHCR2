@@ -10,15 +10,12 @@ $BODY$
     declare lcl_colo_records integer;
     declare lcl_polyp2_records integer;
     declare lcl_event_id integer;
-    declare cur1 cursor for select event_id  from import_scanned_proc_data where to_char(action_on,'yyyy-mm-dd') = in_today and barcode is not null;
+    declare cur1 cursor for select event_id  from import_scanned_proc_data where to_char(inserted_on,'yyyy-mm-dd') = in_today and barcode is not null;
 begin
 
-    update import_scanned_proc_data set event_id = event.event_id from event where barcode = endo_barcode and to_char(import_scanned_proc_data.action_on,'yyyy-mm-dd') = in_today;
-    update colo c set event_id = i.event_id from import_scanned_proc_data i where c.barcode = i.barcode and to_char(i.action_on,'yyyy-mm-dd') = in_today;
-    select count(*) into lcl_colo_records from colo where to_char(inserted_on,'yyyy-mm-dd') = in_today;
-    select count(*) into lcl_polyp2_records from polyp2 where to_char(inserted_on,'yyyy-mm-dd') = in_today;
-    select count(*) into lcl_recs_loaded from import_scanned_proc_data where to_char(action_on,'yyyy-mm-dd') = in_today;
-    select count(*) into lcl_no_barcode from import_scanned_proc_data where to_char(action_on,'yyyy-mm-dd') = in_today and event_id is null;
+    update import_scanned_proc_data i set event_id = event.event_id from event where barcode = endo_barcode and i.inserted_on = cast (in_today as date);
+    update colo c set event_id = cast(i.event_id as integer) from import_scanned_proc_data i where c.barcode = i.barcode and c.inserted_on = cast (in_today as date);
+    select convert_sizes(in_today);
 
     open cur1;
     loop
@@ -29,7 +26,13 @@ begin
       perform colopolypnormalize(lcl_event_id);
    end loop;
 
+    select count(*) into lcl_colo_records from colo c join import_scanned_proc_data i on c.barcode = i.barcode where to_char(c.inserted_on,'yyyy-mm-dd') = in_today and i.barcode is not null;
+    select count(*) into lcl_polyp2_records from polyp2 p join import_scanned_proc_data i on p.event_id = cast(i.event_id as integer) where to_char(p.inserted_on,'yyyy-mm-dd') = in_today and i.event_id is not null;
+    select count(*) into lcl_recs_loaded from import_scanned_proc_data;
+    select count(*) into lcl_no_barcode from import_scanned_proc_data where event_id is null;
     insert into upload (records_loaded,file_name,duplicates,colo_records,polyp2_records,no_barcode) values (lcl_recs_loaded,in_file_name,in_dups,lcl_colo_records,lcl_polyp2_records,lcl_no_barcode);
+
+    --delete from import_scanned_proc_data;
 
 end;
 $BODY$

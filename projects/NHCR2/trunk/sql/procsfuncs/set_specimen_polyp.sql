@@ -66,7 +66,7 @@ returns table (
     lcl_warning varchar,
     lcl_message varchar) AS
 $BODY$
-
+    declare lcl_container_check integer;
 begin
 
     if (in_site_location_cm = '') then select null into in_site_location_cm; end if;
@@ -74,10 +74,10 @@ begin
     if exists(select * from specimen where specimen_id =  in_specimen_id) then
         update specimen set 
             path_report_id = in_path_report_id,
-            path_polyp_loc = in_path_polyp_loc,
-            polyp_num = in_polyp_num,
+            path_polyp_loc = upper(in_path_polyp_loc),
+            polyp_num = upper(in_polyp_num),
             discrepnote = in_discrepnote,
-            container = in_container,
+            container = upper(in_container),
             other_dx_specify = in_other_dx_specify,
             site_location_cm = cast(in_site_location_cm as integer),
             size_mm = cast(in_size_mm as integer),
@@ -199,10 +199,10 @@ begin
         )
         values (
             in_path_report_id,
-            in_path_polyp_loc,
-            in_polyp_num,
+            upper(in_path_polyp_loc),
+            upper(in_polyp_num),
             in_discrepnote,
-            in_container,
+            upper(in_container),
             in_other_dx_specify,
             cast(in_site_location_cm as integer),
             cast(in_size_mm as integer),
@@ -264,7 +264,9 @@ begin
 
     select 'Record Updated' into lcl_message;
 
-    if (public.check_container(in_path_report_id, 'Polyp', in_specimen_id, in_container) = 1) then
+    select public.check_container(in_path_report_id, 'Polyp', in_specimen_id, in_container) into lcl_container_check;
+
+    if (lcl_container_check = 1) then
         select 'Duplicate container' into lcl_warning;
     end if;
 

@@ -10,4 +10,3 @@ begin
 end;
 $BODY$
 LANGUAGE plpgsql 
-grant execute on set_endoscopist to NHCR2_rc; 

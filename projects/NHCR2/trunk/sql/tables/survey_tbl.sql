@@ -6,6 +6,7 @@ create table survey
     record_comment character varying,
     inserted_on date DEFAULT ('now'::text)::date,
     inserted_by character varying,
+    scan_date character varying,
     patient_id integer,
     event_id integer,
     facility_id character varying(10),

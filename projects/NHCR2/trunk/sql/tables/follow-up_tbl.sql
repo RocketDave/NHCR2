@@ -1,5 +1,6 @@
- create table follow_up (
-    follow_up_id character varying,
+﻿ create table follow_up (
+    id serial not null,
+    fu_barcode character varying,
     action_on timestamp without time zone not null,
     action_by character varying not null,
     record_comment character varying,
@@ -34,7 +35,7 @@
     fu_teleform_formid character varying,
     id_not_found smallint,
     teleform_batch_no bigint,
-    constraint follow_up_pkey PRIMARY KEY (follow_up_id)
+    constraint follow_up_pkey PRIMARY KEY (id)
 );
 ALTER TABLE follow_up
     OWNER TO informatics;

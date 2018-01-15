@@ -27,3 +27,12 @@ create table polyp2 (
 alter table polyp2
     owner to informatics;
 grant all on table specimen to informatics;
+
+-- Index: polyp2_event_id_index
+
+-- DROP INDEX polyp2_event_id_index;
+
+CREATE INDEX polyp2_event_id_index
+  ON polyp2
+  USING btree
+  (event_id);

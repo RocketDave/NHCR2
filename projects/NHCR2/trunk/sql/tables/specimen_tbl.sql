@@ -5,7 +5,7 @@ create table specimen(
     record_comment character varying,
     inserted_on date DEFAULT ('now'::text)::date,
     inserted_by character varying,
-    path_report_id bigint,
+    path_report_id bigint not null,
     path_polyp_loc character varying,
     polyp_num character varying,
     discrepnote character varying,
@@ -72,10 +72,22 @@ create table specimen(
     SAS_key_id bigint,
     aggregate_size smallint,
     unspec_no_fragments smallint,
-    flat_polyp smallint
-    constraint specimen_id_pkey primary key (specimen_id)
+    flat_polyp smallint,
+    constraint specimen_id_pkey primary key (specimen_id),
+    CONSTRAINT specimen_path_fk FOREIGN KEY (path_report_id)
+        REFERENCES public.path_report (path_report_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
 );
 alter table specimen
     owner TO informatics;
 grant all on table specimen to informatics;
-   
+
+-- Index: specimen_path_id_index
+
+-- DROP INDEX specimen_path_id_index;
+
+CREATE INDEX specimen_path_id_index
+  ON specimen
+  USING btree
+  (path_id);

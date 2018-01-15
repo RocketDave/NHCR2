@@ -2,6 +2,8 @@ create view vPerson as select
     person_id,
     action_on,
     action_by,
+    inserted_on,
+    inserted_by,
     ssn,
     first_name,
     middle_name,

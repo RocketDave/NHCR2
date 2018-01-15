@@ -3,6 +3,7 @@ select s.action_on,s.action_by,
     s.specimen_id,
     s.path_report_id,
     p.event_id,
+    e.batch_id,
     to_char(e.event_date,'yyyy-mm-dd') as event_date,
     p.case_no,
     p.lab_code,
@@ -77,7 +78,9 @@ select s.action_on,s.action_by,
     s.y_prefix,
     s.record_complete,
     s.flg_size_discrep,
-    s.sas_key_id
+    s.sas_key_id,
+    s.aggregate_size,
+    s.unspec_no_fragments
 from specimen s left outer join path_report p on
     s.path_report_id = p.path_report_id
     join event e on p.event_id = e.event_id;

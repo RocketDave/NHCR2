@@ -17,7 +17,8 @@
     in in_crohns_only integer,
     in in_u_colitis_only integer,
     in in_path_report_complete integer,
-    in in_notes varchar)
+    in in_no_q_form integer
+    )
 
 returns table (
     lcl_path_report_id integer, 
@@ -71,7 +72,7 @@ begin
             crohns_only = in_crohns_only,
             u_colitis_only = in_u_colitis_only,
             path_report_complete = in_path_report_complete,
-            notes = in_notes
+            no_q_form = in_no_q_form
         where path_report_id = in_path_report_id;
     else insert into path_report (
             path_report_id,
@@ -91,7 +92,7 @@ begin
             crohns_only,
             u_colitis_only,
             path_report_complete,
-            notes
+            no_q_form
         )
         values (
             in_path_report_id,
@@ -111,7 +112,7 @@ begin
             in_crohns_only,
             in_u_colitis_only,
             in_path_report_complete,
-            in_notes
+            in_no_q_form
         );
     end if;
 
@@ -129,4 +130,4 @@ $BODY$
 language plpgsql
 security definer;
 grant execute on function public.set_path_report 
-    (integer,integer,varchar,varchar,varchar,varchar,integer,varchar,varchar,varchar,varchar,integer,integer,varchar,integer,integer,integer,integer,varchar) to nhcr2_rc, nhcr2_staff; 
+    (integer,integer,varchar,varchar,varchar,varchar,integer,varchar,varchar,varchar,varchar,integer,integer,varchar,integer,integer,integer,integer,integer) to nhcr2_rc, nhcr2_staff; 

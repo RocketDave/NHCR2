@@ -10,7 +10,8 @@ begin
     select substring (in_barcode,1,1) into lcl_letter;
     select safe_cast(substring (in_barcode,2,7),null::integer) into lcl_num;
 
-    select count(*) from form_log where facility_id = in_facility_id  and 
+    select count(*) from form_log where (facility_id = in_facility_id or 
+        facility_id in (select assoc_fac_id from assoc_facility where parent_facility_id = in_facility_id)) and 
         substring(start_barcode,1,1) = lcl_letter  and 
         lcl_num >= safe_cast(substring(start_barcode,2,7),null::integer) and 
         substring(end_barcode,1,1) = lcl_letter  and 

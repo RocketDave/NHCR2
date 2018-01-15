@@ -29,7 +29,7 @@ begin
         not_approached,
         disabled,
         report_group_code,
-        endo_form_double_entered
+        endo_form_double_entered)
     select
         event_id,
         to_timestamp(modify_date || ' 00:00:00','yyyy/mm/dd hh24:mi:ss'),
@@ -56,10 +56,13 @@ begin
         not_approached,
         disabled,
         report_group_code,
-        endo_form_double_entered)
+        endo_form_double_entered
     from 
         event_import
     order by event_id;
+
+    perform setval('event_event_id_seq', max(event_id)) from event;
+
 end;
 $BODY$
 language plpgsql;

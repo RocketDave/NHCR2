@@ -97,6 +97,8 @@ begin
         endo_pseudo_name
     from 
         endoscopist_import;
+
+    perform setval('endoscopist_endoscopist_id_seq', max(endoscopist_id)) from endoscopist;
 end;
 $BODY$
 language plpgsql;

@@ -26,8 +26,13 @@ begin
         select null into in_endo_code;
     end if;
 
-    select upper(in_endo_barcode) into in_endo_barcode;
-    select upper(in_patient_barcode) into in_patient_barcode;
+    if (in_endo_barcode != '_MISSING' and in_endo_barcode != 'PathLink' and in_endo_barcode != '') then
+        select upper(in_endo_barcode) into in_endo_barcode;
+    end if;
+
+    if (in_patient_barcode != '_MISSING' and in_patient_barcode != 'PathLink' and in_patient_barcode != '') then 
+        select upper(in_patient_barcode) into in_patient_barcode;
+    end if;
 
     if in_event_date = '' then
         select null into in_event_date;

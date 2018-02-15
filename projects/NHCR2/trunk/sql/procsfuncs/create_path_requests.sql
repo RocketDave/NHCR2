@@ -12,7 +12,7 @@ begin
         (find_oth_bmc = 1 or find_oth_biop = 1 or find_oth_ibd = 1 or
         computed_normal_exam=0 or computed_plp_trtmnt=1 or computed_fnd_siz=1 or computed_susp_ca_loc=1
         or computed_susp_ca_siz=1 or computed_susp_ca_trtmnt=1 or computed_susp_crohn=1 or computed_susp_uc=1) and
-        p.refused_date is null and (pth_req_id = 0 or pth_req_id is null) and event_date > '12/31/2009'; --changed from 3/20/2009 (JH 11/20/2017)
+        (p.refused is null or refused = 0) and (pth_req_id = 0 or pth_req_id is null) and event_date > '12/31/2009'; --changed from 3/20/2009 (JH 11/20/2017)
 
     update colo set pth_req_id = p.path_request_id from path_request p where colo.event_id = p.event_id and p.print_date = current_date; 
 

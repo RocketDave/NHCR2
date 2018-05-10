@@ -42,7 +42,7 @@ begin
     update colo set p_siz_g = '2' where p_siz_g = '02' and inserted_on = cast (in_today as date);
     update colo set p_siz_g = '3' where p_siz_g = '03' and inserted_on = cast (in_today as date);
     update colo set p_siz_g = '4' where p_siz_g = '04' and inserted_on = cast (in_today as date);
-    update colo set p_siz_g = '5' where p_siz_g = '05';
+    update colo set p_siz_g = '5' where p_siz_g = '05' and inserted_on = cast (in_today as date);
 end;
 $BODY$
 language plpgsql

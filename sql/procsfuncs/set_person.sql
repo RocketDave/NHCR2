@@ -27,12 +27,7 @@ $BODY$
 
 begin
 
-    if (in_dob = '') then select null into in_dob; end if;
-    if (in_deceased_date = '') then select null into in_deceased_date;end if;
-    if (in_refused_date = '') then select null into in_refused_date;end if;
-    if (in_bad_address_date = '') then select null into in_bad_address_date;end if;
-
-    if exists(select * from person where person_id =  in_person_id) then
+if exists(select * from person where person_id =  in_person_id) then
         update person set 
             ssn = in_ssn,
             first_name = in_first_name,
@@ -44,21 +39,21 @@ begin
             city = in_city,
             state = upper(in_state),
             zip = in_zip,
-            dob = cast(in_dob as date),
+            dob = safe_cast(in_dob,null::date),
             deceased = in_deceased,
-            deceased_date = cast(in_deceased_date as date),
+            deceased_date = safe_cast(in_deceased_date,null::date),
             refused = in_refused,
-            refused_date = cast(in_refused_date as date),
+            refused_date = safe_cast(in_refused_date,null::date),
             gender_calcd = in_gender_calcd,
             source_gender_calcd = in_source_gender_calcd,
             bad_address = in_bad_address,
-            bad_address_date = cast(in_bad_address_date as date),
+            bad_address_date = safe_cast(in_bad_address_date,null::date),
             comments = in_comments 
             where person_id = in_person_id;
-        select 'Record Updated' into lcl_message;
+                select 'Record Updated'  into lcl_message;
     else
         select 'ID - ' || in_person_id || 'not found' into lcl_message;
-    end if;
+end if;
 
     return query 
         select in_person_id, lcl_message;

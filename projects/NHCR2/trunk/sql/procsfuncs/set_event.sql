@@ -39,13 +39,13 @@ begin
     end if;
 
     -- uncomment 2 lines below for production
-    if (in_patient_barcode != '_MISSING' and in_patient_barcode != 'PathLink' and in_patient_barcode != '') then 
+    if (in_patient_barcode != '_MISSING' and in_patient_barcode != 'PathLink' and in_patient_barcode != '' and in_facility_id != '') then 
         select check_barcode(in_patient_barcode,in_facility_id) into lcl_barcode_check_p; 
     else
         select 1 into lcl_barcode_check_p; 
     end if;
 
-    if (in_endo_barcode != '_MISSING' and in_endo_barcode != 'PathLink' and in_endo_barcode != '') then 
+    if (in_endo_barcode != '_MISSING' and in_endo_barcode != 'PathLink' and in_endo_barcode != '' and in_facility_id != '') then 
         select check_barcode(in_endo_barcode,in_facility_id) into lcl_barcode_check_e;
     else
         select 1 into lcl_barcode_check_e; 
@@ -53,6 +53,8 @@ begin
 
     if (lcl_barcode_check_p = 0 or lcl_barcode_check_e = 0) then
         select 'Barcode does not match barcodes for this facility' into lcl_message;
+	elseif not exists(select * from person where person_id = in_person_id) then
+        select 'Not a valid person ID' into lcl_message;
     elseif exists(select endo_barcode from event where endo_barcode = in_endo_barcode and in_endo_barcode != '' and in_endo_barcode != 'PathLink' and in_endo_barcode != '_MISSING' and event_id != in_event_id) then
         select 'That endo barcode has already been assigned' into lcl_message;
     elseif exists(select patient_barcode from event where patient_barcode = in_patient_barcode and in_patient_barcode != '' and in_patient_barcode != 'PathLink' and in_patient_barcode != '_MISSING' and event_id != in_event_id) then

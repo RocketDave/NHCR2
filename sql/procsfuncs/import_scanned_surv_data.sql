@@ -11,10 +11,10 @@ $BODY$
     declare lcl_event_id integer;
 begin
 
-    update import_scanned_surv_data i set event_id = e.event_id from event e where barcode = patient_barcode and i.inserted_on = cast (in_today as date);
-    update survey s set event_id = e.event_id from event e where barcode = patient_barcode and s.inserted_on = cast (in_today as date);
+    update import_scanned_surv_data i set event_id = e.event_id from event e where upper(barcode)= upper(patient_barcode) and i.inserted_on = cast (in_today as date);
+    update survey s set event_id = e.event_id from event e where upper(barcode) = upper(patient_barcode) and s.inserted_on = cast (in_today as date);
     update survey set coumadin = 0 where coumadin = 9 and inserted_on = current_date;
-    select count(*) into lcl_survey_records from survey s join import_scanned_surv_data i on s.barcode = i.barcode where s.inserted_on = cast (in_today as date) and i.barcode is not null;
+    select count(*) into lcl_survey_records from survey s join import_scanned_surv_data i on upper(s.barcode) = upper(i.barcode) where s.inserted_on = cast (in_today as date) and i.barcode is not null;
     select count(*) into lcl_recs_loaded from import_scanned_surv_data where inserted_on = cast (in_today as date);
     select count(*) into lcl_no_barcode from import_scanned_surv_data where inserted_on = cast(in_today as date) and event_id is null;
 

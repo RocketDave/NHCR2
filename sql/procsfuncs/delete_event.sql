@@ -13,7 +13,7 @@ begin
         delete from event where event_id = in_event_id;
         select 'Record Deleted' into lcl_message;
     else
-        select 'Cannot delete event - related records exist' into lcl_message;
+        select 'Cannot delete record. Related events exist - ' || get_related_eventid(in_event_id) into lcl_message;
     end if;
 
     return query select lcl_message;

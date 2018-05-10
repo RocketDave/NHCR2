@@ -14,8 +14,14 @@ begin
     insert into person (record_comment) values('New subject');
     if (in_dob = '') then select null into in_dob; end if;
 
+	if (in_last_name != '' and in_first_name != '') then
+		select check_for_dup (in_last_name, in_first_name) into lcl_message;
+	else
+		select '' into lcl_message;
+	end if;
+
     select  currval('person_person_id_seq') into lcl_person_id;
-    select 'New subject - ' || lcl_person_id into lcl_message;
+    select lcl_message || ' New subject - ' || lcl_person_id into lcl_message;
     select safe_cast(in_dob,null::date) into lcl_dob;
 
     update person set 

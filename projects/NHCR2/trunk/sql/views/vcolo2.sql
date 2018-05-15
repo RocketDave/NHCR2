@@ -1,11 +1,11 @@
 ﻿create view vColo2 as select
-    action_on,
-    action_by,
+    c.action_on,
+    c.action_by,
     colo_id,
-    event_id,
-    facility_id ,
+    c.event_id,
+    b.facility_id,
     facility_type ,
-    to_char(exam_date,'yyyy-mm-dd') as exam_date,
+    to_char(e.event_date,'yyyy-mm-dd') as exam_date,
     teleform_formid ,
     crs_batch,
     scan_batch,
@@ -243,7 +243,7 @@
     util_bool ,
     computed_fnd_polyp ,
     computed_fnd_siz ,
-    endo_code ,
+    e.endo_code ,
     f_reas_curex ,
     f_reas_famhx ,
     f_reas_perhx ,
@@ -293,5 +293,5 @@
     find_calc_cancer ,
     find_calc_other ,
     find_calc_nodata 
-    from colo;
+    from colo c left outer join event e on c.event_id = e.event_id join batch b on e.batch_id = b.batch_id;
     grant select on vColo2 to NHCR2_rc;

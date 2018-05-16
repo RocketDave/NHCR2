@@ -3,6 +3,7 @@ create view vPerson_tbl as select
     inserted_on,
     last_name,
     first_name,
-    dob
+    dob,
+	ssn
     from Person;
 grant select on vPerson_tbl to NHCR2_rc;

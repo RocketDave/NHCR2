@@ -16,5 +16,5 @@
     est_exam_date ,
     signature_present ,
     second_batch
-    from event e join batch b on e.batch_id = b.batch_id order by event_id;
+    from event e left outer join batch b on e.batch_id = b.batch_id order by event_id;
 grant select on vEvents to NHCR2_rc;

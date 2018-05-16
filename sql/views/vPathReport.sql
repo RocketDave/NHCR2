@@ -7,6 +7,7 @@
     p.event_id ,
     path_report_complete,
     e.person_id ,
+    pr.last_name || ', ' || pr.first_name as person_name,
     to_char(date_of_birth,'yyyy-mm-dd') as dob,
     case_no,
     procedure_type,
@@ -38,6 +39,6 @@
     date_discrepancy,
     b.facility_id,
     e.endo_barcode
-    from path_report p join event e on p.event_id = e.event_id join batch b on e.batch_id = b.batch_id;
+    from path_report p join event e on p.event_id = e.event_id join person pr on e.person_id = pr.person_id join batch b on e.batch_id = b.batch_id;
 
 GRANT select on vPathReport to nhcr2_rc;

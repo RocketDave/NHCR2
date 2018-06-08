@@ -1,5 +1,5 @@
 ﻿create or replace function set_other_name(
-       in in_person_id varchar,
+       in in_person_id integer,
        in in_last_name varchar,
        in in_maiden_flag integer)
 returns table (
@@ -29,5 +29,5 @@ end;
 $BODY$
 language plpgsql
 security definer;
-grant execute on function public.set_other_name(character varying, character varying, integer) to NHCR2_rc; 
+grant execute on function public.set_other_name(integer, character varying, integer) to NHCR2_rc; 
 

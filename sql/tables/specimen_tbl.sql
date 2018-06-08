@@ -82,7 +82,7 @@ create table specimen(
 alter table specimen
     owner TO informatics;
 grant all on table specimen to informatics;
-
+grant select on table specimen to NHCR2_data;
 -- Index: specimen_path_id_index
 
 -- DROP INDEX specimen_path_id_index;

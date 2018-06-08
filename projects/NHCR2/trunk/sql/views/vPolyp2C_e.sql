@@ -1,0 +1,20 @@
+﻿create view vPolyp2C_e as select
+    p2.event_id as p2_event_id,
+    c.event_id as c_event_id,
+    cast (old_polyp_id as character(1)),
+    p_loc ,
+    p_siz ,
+    pt_cb ,
+    pt_hb ,
+    pt_hs ,
+    pt_cs ,
+    pt_pme ,
+    pt_pe ,
+    pt_nr ,
+    pt_lo ,
+    pt_o ,
+    pt_sn ,
+    pt_te ,
+    notes ,
+    p_flat
+    from polyp2 p2 join colo c on p2.event_id = c.event_id;

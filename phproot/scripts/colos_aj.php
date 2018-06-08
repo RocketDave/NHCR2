@@ -22,7 +22,7 @@ authenticate();
  */
  
 // DB table to use
-$table = 'colo';
+$table = 'vColos';
  
 // Table's primary key
 $primaryKey = 'colo_id';
@@ -44,7 +44,10 @@ $columns = array(
     ),
     array( 'db' => 'colo_id', 'dt' => 0 ),
     array( 'db' => 'event_id',  'dt' => 1 ),
-    array( 'db' => 'exam_date',  'dt' => 2 )
+    array( 'db' => 'event_date',  'dt' => 2 ),
+    array( 'db' => 'facility_name',  'dt' => 3 ),
+    array( 'db' => 'scan_batch',  'dt' => 4 ),
+    array( 'db' => 'batch_id',  'dt' => 5 ),
 );
  
 // SQL server connection information

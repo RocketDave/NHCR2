@@ -9,7 +9,7 @@ update findings set clinically_serrated = get_clinically_serrated(event_id);
 
 update findings set adenoma_detected = get_adenoma_detected(event_id);
 
-update findings set indication_calculated = get_indication(colo_id);
+--update findings set indication_calculated = get_indication(colo_id); is now calculated in data import
 
 update findings set screening = 1 where indication_calculated = 'Screening';
 update findings set surveillance = 1 where indication_calculated = 'Surveillance';

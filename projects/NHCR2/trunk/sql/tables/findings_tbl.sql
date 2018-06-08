@@ -14,22 +14,21 @@ CREATE TABLE findings
   event_id bigint,
   pr_event_id bigint,
   event_type character varying,
-  path_report_complete integer,
+  path_report_complete integer default 0,
   age_exam integer,
   exam_date date,
   endoscopist_id integer,
   facility_id character varying,
-  facility_type character varying,
   gender_calcd character varying,
   end_proc_stat_rr character varying,
   prep character varying,
-  adenoma_detected integer,
-  clinically_serrated integer,
-  proximal_serrated integer,
-  screening integer,
-  surveillance integer,
-  diagnostic integer,
-  eligible integer,
+  adenoma_detected integer default 0,
+  clinically_serrated integer default 0,
+  proximal_serrated integer default 0,
+  screening integer default 0,
+  surveillance integer default 0,
+  diagnostic integer default 0,
+  eligible integer default 0,
   indication_calculated character varying,
   ind_scr_nosym character varying,
   ind_scr_fhxcc character varying,
@@ -62,7 +61,6 @@ CREATE TABLE findings
   find_calc_polyp integer,
   find_calc_cancer integer,
   find_calc_other integer,
-  find_calc_nodata integer,
   fnd_norm_ex integer,
   fnd_plp integer,
   find_other integer,
@@ -77,11 +75,14 @@ CREATE TABLE findings
   abort_reas_tc character varying,
   abort_reas_oth character varying,
   wthdrwl_time character varying,
-  adenoma_detected_old integer,
-  serrated_detected_old integer,
   fup_10 character varying,
   fu_form_completed character varying,
   fup_gt10 character varying,
+  comp_none character varying,
+  comp_bleed character varying,
+  comp_perf character varying,
+  comp_cardio character varying,
+  comp_resparr character varying,
   CONSTRAINT findings_id_pkey PRIMARY KEY (id)
 )
 WITH (
@@ -91,7 +92,7 @@ ALTER TABLE findings
   OWNER TO informatics;
 GRANT ALL ON TABLE findings TO informatics;
 GRANT ALL ON TABLE findings TO nhcr2_rc;
-
+GRANT ALL ON findings_id_seq TO nhcr2_rc;
 -- Index: findings_colo_id_index
 
 -- DROP INDEX findings_colo_id_index;

@@ -1,7 +1,7 @@
 ﻿create view vColo as select
     colo_id,
-    event_id as c_event_id,
-    facility_id ,
+    c.event_id as c_event_id,
+    b.facility_id ,
     facility_type ,
     to_char(exam_date,'yyyy-mm-dd') as exam_date,
     teleform_formid ,
@@ -111,7 +111,7 @@
     util_bool ,
     computed_fnd_polyp ,
     computed_fnd_siz ,
-    endo_code ,
+    e.endo_code ,
     f_reas_curex ,
     f_reas_famhx ,
     f_reas_perhx ,
@@ -161,4 +161,5 @@
     find_calc_cancer ,
     find_calc_other ,
     find_calc_nodata 
-    from colo;
+    from colo c join event e on c.event_id = e.event_id join batch b on e.batch_id = b.batch_id;
+grant select on public.vcolo to nhcr2_rc;

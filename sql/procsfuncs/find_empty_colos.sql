@@ -1,7 +1,7 @@
 create function find_empty_colos (in in_colo_id integer)
-returns smallint AS
+returns integer AS
 $BODY$
-declare lcl_return smallint;
+declare lcl_return integer;
 begin
 
 

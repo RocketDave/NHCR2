@@ -81,7 +81,7 @@ select s.action_on,s.action_by,
     s.sas_key_id,
     s.aggregate_size,
     s.unspec_no_fragments
-from specimen s left outer join path_report p on
+from specimen s join path_report p on
     s.path_report_id = p.path_report_id
     join event e on p.event_id = e.event_id;
 grant select on vSpecimen to NHCR2_rc;

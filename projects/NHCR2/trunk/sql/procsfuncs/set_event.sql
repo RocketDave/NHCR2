@@ -39,13 +39,13 @@ begin
     end if;
 
     -- uncomment 2 lines below for production
-    if (in_patient_barcode != '_MISSING' and in_patient_barcode != 'PathLink' and in_patient_barcode != '' and in_facility_id != '') then 
+    if (in_patient_barcode != '_MISSING' and in_patient_barcode != 'PathLink' and in_patient_barcode != '' and in_facility_id != '' and substring(in_patient_barcode,1,1) != 'P') then 
         select check_barcode(in_patient_barcode,in_facility_id) into lcl_barcode_check_p; 
     else
         select 1 into lcl_barcode_check_p; 
     end if;
 
-    if (in_endo_barcode != '_MISSING' and in_endo_barcode != 'PathLink' and in_endo_barcode != '' and in_facility_id != '') then 
+    if (in_endo_barcode != '_MISSING' and in_endo_barcode != 'PathLink' and in_endo_barcode != '' and in_facility_id != ''  and substring(in_endo_barcode,1,1) != 'Q') then 
         select check_barcode(in_endo_barcode,in_facility_id) into lcl_barcode_check_e;
     else
         select 1 into lcl_barcode_check_e; 

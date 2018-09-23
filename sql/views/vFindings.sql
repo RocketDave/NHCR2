@@ -2,6 +2,7 @@ create view vFindings as select
   colo_id ,
   event_id ,
   pr_event_id ,
+  inserted_on ,
   event_type ,
   path_report_complete ,
   age_exam ,

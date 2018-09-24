@@ -22,7 +22,7 @@ authenticate();
  */
  
 // DB table to use
-$table = 'vForm_logs';
+$table = 'vform_logs_p';
  
 // Table's primary key
 $primaryKey = 'form_log_id';

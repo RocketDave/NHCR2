@@ -22,7 +22,7 @@ authenticate();
  */
  
 // DB table to use
-$table = 'vPathReport';
+$table = 'vpathreport_p';
  
 // Table's primary key
 $primaryKey = 'path_report_id';
@@ -43,8 +43,22 @@ $columns = array(
         }
     ),
     array( 'db' => 'path_report_id', 'dt' => 0 ),
-    array( 'db' => 'event_id', 'dt' => 1 ),
-    array( 'db' => 'procedure_type',  'dt' => 2 )
+    array( 'db' => 'inserted_on', 'dt' => 1 ),
+    array( 'db' => 'person_id', 'dt' => 2 ),
+    array( 'db' => 'event_id', 'dt' => 3 ),
+    array( 'db' => 'case_no', 'dt' => 4 ),
+    array(
+            'db'        => 'pathology_date',
+            'dt'        => 5,
+            'formatter' => function( $d, $row ) {
+                if (strtotime($d) != '') {
+                    return date( 'm/d/Y', strtotime($d));
+                } else {
+                    return '';
+                }
+            }
+        ),
+    array( 'db' => 'path_report_complete', 'dt' => 6 )
 );
  
 

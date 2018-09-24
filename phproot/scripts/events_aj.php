@@ -22,7 +22,7 @@ authenticate();
  */
  
 // DB table to use
-$table = 'event';
+$table = 'vEvents_p';
  
 // Table's primary key
 $primaryKey = 'event_id';
@@ -44,7 +44,11 @@ $columns = array(
     ),
     array( 'db' => 'event_id', 'dt' => 0 ),
     array( 'db' => 'person_id',  'dt' => 1 ),
-    array( 'db' => 'event_date',  'dt' => 2 )
+    array( 'db' => 'batch_id',  'dt' => 2 ),
+    array( 'db' => 'facility_id',  'dt' => 3 ),
+    array( 'db' => 'event_date',  'dt' => 4),
+    array( 'db' => 'patient_barcode',  'dt' => 5),
+    array( 'db' => 'endo_barcode',  'dt' => 6)
 );
  
 // SQL server connection information

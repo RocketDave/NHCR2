@@ -3,7 +3,17 @@
 require_once("includes/Project.php");
 authenticate();
 
-$current_date = date("m/d/Y");
+try {
+    $conn = connect();
+    if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+        $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+        header('Location: Logout.php');
+    }
+}
+
+catch (Exception $e) {
+    $session->info['message'] = $e->getMessage();
+}
 
 ?>
 <!DOCTYPE html>
@@ -25,7 +35,7 @@ $current_date = date("m/d/Y");
 <p><p>
 
 <div class="container">
-<form class="form-horizontal" name="myform" id="myform" method="post" action="Endoscopist_rpt.php" target="_blank" autocomplete="off">
+<form class="form-horizontal" name="myform" id="myform" method="post" action="endoscopist_rpt.php" target="_blank" autocomplete="off">
     <h3>Endoscopist Report</h2>
     <div class="form-group row">
       <label class="control-label col-md-2" for="endo_code">Endo code:</label>

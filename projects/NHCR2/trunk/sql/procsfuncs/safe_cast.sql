@@ -1,4 +1,4 @@
-create function safe_cast(text,anyelement) 
+create function public.safe_cast(text,anyelement) 
 returns anyelement 
 language plpgsql as $$ 
 begin 

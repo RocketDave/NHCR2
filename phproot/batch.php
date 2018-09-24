@@ -3,13 +3,24 @@
 require_once("includes/Project.php");
 authenticate();
 
-/* Making the database connection here becuase it is going to be used to load the dropdown menus    */
 $conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
 
 $current_date = date("m/d/Y");
 $submit_message = "";
-isset($_POST['batch_id'])?$batch_id=$_POST['batch_id']:$batch_id="-9";
+$errors =  0;
+$error_message = "";
+$warning_message  = "";
 
+isset($_POST['batch_id'])?$batch_id=$_POST['batch_id']:$batch_id=-9;
+isset($_POST['batch_end'])?$batch_end=$_POST['batch_end']:$batch_end="";
+
+if ($batch_end=="1") {
+    unset($_SESSION['batch_id']);
+}
 $fac_array = array();
 $result = pg_query ('select facility_id as fac_id, facility_name from Facility order by facility_name;' ) ;
 $num_cols = pg_num_fields ($result ) ;
@@ -34,56 +45,101 @@ if (array_key_exists('confirm_submit', $_POST))   {
 
     isset($action_on)?$action_on:$action_on="";
     isset($action_by)?$action_by:$action_by="";
-    isset($batch_id)?$batch_id:$batch_id="";
+    isset($batch_id)?$batch_id:$batch_id=-9;
     isset($facility_id)?$facility_id:$facility_id="";
     isset($arrival_date)?$arrival_date:$arrival_date="";
     isset($entry_completed)?$entry_completed:$entry_completed="";
     isset($entry_completed_on)?$entry_completed_on:$entry_completed_on="";
+    isset($refusals_with_r)?$refusals_with_r:$refusals_with_r="";
+    isset($refusals_without_r)?$refusals_without_r:$refusals_without_r="";
+    isset($refusals_without_g)?$refusals_without_g:$refusals_without_g="";
+    isset($unsigned_with_r)?$unsigned_with_r:$unsigned_with_r="";
+    isset($unsigned_without_r)?$unsigned_without_r:$unsigned_without_r="";
+    isset($orphans)?$orphans:$orphans="";
+    isset($not_approached)?$not_approached:$not_approached="";
+    isset($disabled)?$disabled:$disabled="";
+    isset($language)?$language:$language="";
     isset($comments)?$comments:$comments="";
 
-    try{
-        $stmt = pg_prepare($conn,"the_query","select * from public.set_batch($1,$2,$3,$4,$5,$6)");
-        if ($stmt) {
-            $result = pg_execute($conn,"the_query", array(
-                $batch_id,
-                $facility_id,
-                $arrival_date,
-                $entry_completed,
-                $entry_completed_on,
-                $comments)
+    if ($arrival_date == "") {
+        $errors = 1;
+        $error_message  = 'You must enter an arrival date.';
+    }
+
+    if ($facility_id == "") {
+        $errors = 1;
+        $error_message  = 'You must select a facility.';
+    }
+
+    if ($errors == 0) {
+        try{
+            $stmt = pg_prepare($conn,"the_query","select * from public.set_batch($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)");
+            if ($stmt) {
+                $result = pg_execute($conn,"the_query", array(
+                    $batch_id,
+                    $facility_id,
+                    $arrival_date,
+                    (int)$entry_completed,
+                    $entry_completed_on,
+                    (int)$refusals_with_r,
+                    (int)$refusals_without_r,
+                    (int)$refusals_without_g,
+                    (int)$unsigned_with_r,
+                    (int)$unsigned_without_r,
+                    (int)$orphans,
+                    (int)$not_approached,
+                    (int)$disabled,
+                    (int)$language,
+                    $comments)
                 );
-            if($result) {
-                $rows = pg_fetch_assoc( $result );
-                $batch_id = $rows['lcl_batch_id'];
-                $submit_message = $rows['lcl_message'];
+                if($result) {
+                    $rows = pg_fetch_assoc( $result );
+                    $batch_id = $rows['lcl_batch_id'];
+                    if ($batch_end=="1") {
+                        unset($_SESSION['batch_id']);
+                    } else {
+                        $_SESSION['batch_id'] = $batch_id;
+                    }
+                    $submit_message = $rows['lcl_message'];
+                }
+                else 
+                    throw new exception ('Problem updating record.');
             }
-            else
-                throw new exception ('Problem updating record.');
+        }
+        catch (Exception $e) {
+            echo 'ERROR: '.$e;
         }
     }
-    catch (Exception $e) {
-        echo 'ERROR: '.$e;
-    }
 }
 
-$result = pg_query("select * from vBatches where batch_id = '" . $batch_id . "'");
+if ($errors == 0) {
+    $result = pg_query("select * from vBatches where batch_id = '" . $batch_id . "'");
 
-while($row = pg_fetch_array($result)){
-    foreach ($row as $key => $value) {
-        /* assign to var (strip whitespace if 2t an array)    */
-        ${$key} = is_array($value) ? $value : trim($value);
+    while($row = pg_fetch_array($result)){
+        foreach ($row as $key => $value) {
+            /* assign to var (strip whitespace if 2t an array)    */
+            ${$key} = is_array($value) ? $value : trim($value);
+        }
     }
-}
 
     isset($action_on)?$action_on:$action_on="";
     isset($action_by)?$action_by:$action_by="";
-    isset($batch_id)?$batch_id:$batch_id="";
+    isset($batch_id)?$batch_id:$batch_id=-9;
     isset($facility_id)?$facility_id:$facility_id="";
     isset($arrival_date)?$arrival_date:$arrival_date="";
     isset($entry_completed)?$entry_completed:$entry_completed="";
     isset($entry_completed_on)?$entry_completed_on:$entry_completed_on="";
+    isset($refusals_with_r)?$refusals_with_r:$refusals_with_r="";
+    isset($refusals_without_r)?$refusals_without_r:$refusals_without_r="";
+    isset($refusals_without_g)?$refusals_without_g:$refusals_without_g="";
+    isset($unsigned_with_r)?$unsigned_with_r:$unsigned_with_r="";
+    isset($unsigned_without_r)?$unsigned_without_r:$unsigned_without_r="";
+    isset($orphans)?$orphans:$orphans="";
+    isset($not_approached)?$not_approached:$not_approached="";
+    isset($disabled)?$disabled:$disabled="";
+    isset($language)?$language:$language="";
     isset($comments)?$comments:$comments="";
-
+}
 
 ?>
 <!DOCTYPE html>
@@ -101,12 +157,10 @@ while($row = pg_fetch_array($result)){
 <body >
 <?php include("includes/header.php"); ?>
 <p><p>
-<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off">
+<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off" OnKeyPress="return disableEnterKey(event)">
 <input type="hidden" id="batch_id" name="batch_id" value="<?php echo $batch_id; ?>"/>
+<input type="hidden" id="batch_end" name="batch_end" value="<?php echo $batch_end; ?>"/>
 <div class="container-fluid">
-<?php   if(isset($submit_message))    {    
-    echo '<div class="text-info text-center bg-info h3">'.$submit_message.'</div>'; 
-    } ?>
     <h4> Batch</h4>
     <div>
         ID:<?php echo $batch_id; ?><br>
@@ -114,6 +168,10 @@ while($row = pg_fetch_array($result)){
         By: <?php echo $action_by; ?><br><br></b>
     </div>
 <p><p>
+<?php   if(isset($submit_message))    {    
+    echo '<div class="text-info text-center bg-info h3">'.$submit_message.'</div>'; 
+    echo '<div class="text-center bg-danger h3">'.$error_message.'</div>'; 
+    } ?>
     <div class="form-group row">
       <label class="control-label col-md-2" for="main_site">Facility:</label>
         <div class="col-md-3">
@@ -146,9 +204,53 @@ while($row = pg_fetch_array($result)){
         <div class="checkbox col-md-1">
             <input type="checkbox" name="entry_completed" id="entry_completed" value="1" <?php echo $entry_completed=="1"?"checked":""; ?>>
         </div>
-      <label class="control-label col-md-1" for="entry_completed_on" >Completed on:</label>
-      <div class="col-md-2">
+        <label class="control-label col-md-1" for="entry_completed_on" >Completed on:</label>
+        <div class="col-md-2">
             <input type="date" class="form-control" name="entry_completed_on" id="entry_completed_on" value="<?php echo $entry_completed_on;?>">
+        </div>
+    </div>
+    <div class="form-group row">
+      <label class="control-label col-md-2" for="refusals_with_r" >G with R form (Refused):</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="refusals_with_r" id="refusals_with_r" value="<?php echo $refusals_with_r;?>">
+      </div>
+      <label class="control-label col-md-2" for="refusals_without_r" >G without R form (Refused):</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="refusals_without_r" id="refusals_without_r" value="<?php echo $refusals_without_r;?>">
+      </div>
+      <label class="control-label col-md-2" for="refusals_without_g" >R without G form (Refused):</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="refusals_without_g" id="refusals_without_g" value="<?php echo $refusals_without_g;?>">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="control-label col-md-2" for="unsigned_with_r" >G with R form (Unsigned):</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="unsigned_with_r" id="unsigned_with_r" value="<?php echo $unsigned_with_r;?>">
+      </div>
+      <label class="control-label col-md-2" for="unsigned_without_r" >G without R form (Unsigned):</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="unsigned_without_r" id="unsigned_without_r" value="<?php echo $unsigned_without_r;?>">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="control-label col-md-2" for="orphans" >Orphans (R without G form):</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="orphans" id="orphans" value="<?php echo $orphans;?>">
+      </div>
+      <label class="control-label col-md-2" for="not_approached" >Not Approached:</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="not_approached" id="not_approached" value="<?php echo $not_approached;?>">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="control-label col-md-2" for="disabled" >Disabled:</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="disabled" id="disabled" value="<?php echo $disabled;?>">
+      </div>
+      <label class="control-label col-md-2" for="language" >Language:</label>
+      <div class="col-md-1">
+            <input type="text" class="form-control" name="language" id="language" value="<?php echo $language;?>">
       </div>
     </div>
     <div class="form-group row">
@@ -159,12 +261,13 @@ while($row = pg_fetch_array($result)){
     </div>
 
     <div class="text-center form-group row">
-        <input type="submit" id="idsub" class="btn-primary" name="confirm_submit" value="Submit">
+        <input type="submit" id="idsub" class="btn-primary" name="confirm_submit" value="Save" onclick="return confirm ('Are you Sure?');">
     </div>
 
     <div class="text-center form-group row">
-        <button id="return" type="button" class="btn btn-link">Return to Batches</button>
+        <a href="batchentry.php">Go to Batch Entry</a>
     </div>
+
 </div>
 </form>
 <br/>
@@ -172,7 +275,7 @@ while($row = pg_fetch_array($result)){
 <br />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/batch.js"></script>
+<script type="text/javascript" src="./js/corescript.js"></script>
 </body>
 </html>
 <?php

@@ -1,17 +1,12 @@
 <?php
+/* Check to see if person accessing this page is logged in.    */
 require_once("includes/Project.php");
+authenticate();
 
-$session->check_session($_SERVER['REQUEST_URI']);
-
-try {
-    $session->db_reconnect();
-    if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
-        $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
-        header('Location: Logout.php');
-    }
-}
-catch (Exception $e) {
-    $session->info['message'] = $e->getMessage();
+$conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+	$_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+	header('Location: Login.php');
 }
 
 $endo_id = $_GET['q'];

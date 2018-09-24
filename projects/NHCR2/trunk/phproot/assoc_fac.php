@@ -1,9 +1,13 @@
 <?php
+/* Check to see if person accessing this page is logged in.    */
 require_once("includes/Project.php");
 authenticate();
 
-/* Making the database connection here becuase it is going to be used to load the dropdown menus    */
 $conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
 
 isset($_GET['q'])?$assoc_id=$_GET['q']:$assoc_id="";
 isset($_GET['f'])?$facility_id=$_GET['f']:$facility_id="";
@@ -11,8 +15,8 @@ isset($_GET['t'])?$type_r=$_GET['t']:$type_r="";
 
 
 if ($type_r=='add'){
-	$assoc_fac_name = substr($assoc_id,strpos($assoc_id,'-') + 2);
-	$assoc_id = substr($assoc_id,0,strpos($assoc_id,'-'));
+    $assoc_fac_name = substr($assoc_id,strpos($assoc_id,'-') + 2);
+    $assoc_id = substr($assoc_id,0,strpos($assoc_id,'-'));
 }
 
 if ($type_r=='del') {

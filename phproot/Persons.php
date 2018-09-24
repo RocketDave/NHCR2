@@ -1,6 +1,13 @@
 <?php
+/* Check to see if person accessing this page is logged in.    */
 require_once("includes/Project.php");
 authenticate();
+
+$conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
 
 ?>
 <!DOCTYPE html>
@@ -21,7 +28,7 @@ authenticate();
 <body >
 <?php include("includes/header.php"); ?>
 <p><p>
-<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off">
+<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off" OnKeyPress="return disableEnterKey(event)">
 <input type="hidden" name="person_id" id="person_id">
 
 <div class="container-fluid">
@@ -30,24 +37,27 @@ authenticate();
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Inserted On</th>
                 <th>Last Name</th>
                 <th>First Name</th>
-                <th>DOB</th>
+                <th>DOB </th>
+                <th>SSN </th>
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th>ID</th>
+                <th>Inserted On</th>
                 <th>Last Name</th>
                 <th>First Name</th>
-                <th>DOB</th>
+                <th>DOB </th>
+                <th>SSN </th>
             </tr>
         </tfoot>
 	</table>
 
     <div class="form-group row">
         <button id="clear_search" type="button" class="btn btn-primary">Clear Search</button>
-        <a href="Person.php" id="add_person" role="button" class="btn btn-primary">Add Person</a>
     </div>
 </div>
 </form>
@@ -59,7 +69,8 @@ authenticate();
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="./js/jquery.dataTables.js"></script>
-<script type="text/javascript" src="./js/persons.js"></script>
+<script type="text/javascript" src="./js/persons_v4.js"></script>
+<script type="text/javascript" src="./js/corescript.js"></script>
 
 </body>
 </html>

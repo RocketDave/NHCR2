@@ -3,9 +3,11 @@
 require_once("includes/Project.php");
 authenticate();
 
-/* Making the database connection here becuase it is going to be used to load the dropdown menus    */
 $conn = connect();
-
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
 $current_date = date("m/d/Y");
 $submit_message = "";
 $errors = 0;
@@ -312,7 +314,7 @@ if ($errors == 0 and $specimen_id != '') {
 </head>
 <body >
 <?php include("includes/header.php"); ?>
-<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off">
+<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off" OnKeyPress="return disableEnterKey(event)">
 <input type="hidden" id="specimen_id" name="specimen_id" value="<?php echo $specimen_id; ?>"/>
 <input type="hidden" id="event_id" name="event_id" value="<?php echo $event_id; ?>"/>
 <input type="hidden" id="path_report_id" name="path_report_id" value="<?php echo $path_report_id; ?>"/>
@@ -795,13 +797,13 @@ if ($errors == 0 and $specimen_id != '') {
     </div>
 
     <div class="text-center">
-        <a href="Specimens.php">Return to Specimens</a>
+        <a href="specimens.php">Return to Specimens</a>
     </div>
     <div class="text-center">
         <button id="to_path" type="button" class="btn btn-link">Return to Path Report</button>
     </div>
     <div class="text-center">
-        <input type="submit" id="idsub" class="btn-primary" name="confirm_submit" value="Submit">
+        <input type="submit" id="idsub" class="btn-primary" name="confirm_submit" value="Save">
     </div>
 
 </div>
@@ -812,6 +814,7 @@ if ($errors == 0 and $specimen_id != '') {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
 <script type="text/javascript" src="./js/specimen.js"></script>
+<script type="text/javascript" src="./js/corescript.js"></script>
 </body>
 </html>
 <?php

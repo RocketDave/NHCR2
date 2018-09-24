@@ -3,14 +3,18 @@
 require_once("includes/Project.php");
 authenticate();
 
-/* Making the database connection here becuase it is going to be used to load the dropdown menus    */
 $conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
 
 $current_date = date("m/d/Y");
 $submit_message = "";
 $errors = 0;
 $error_class="text-center";
 $error_message="";
+$warning_message="";
 
 isset($_POST['specimen_id'])?$specimen_id=$_POST['specimen_id']:$specimen_id=-9;
 isset($_POST['path_report_id'])?$path_report_id=$_POST['path_report_id']:$path_report_id="";
@@ -40,8 +44,7 @@ if (array_key_exists('confirm_submit', $_POST))   {
     isset($action_by)?$action_by:$action_by= "";
     isset($specimen_id)?$specimen_id:$specimen_id= -9;
     isset($path_report_id)?$path_report_id:$path_report_id= "";
-    isset($event_id)?$event_id:$event_id= "";
-    isset($person_id)?$person_id:$person_id= "";
+    isset($batch_id)?$batch_id:$batch_id= "";
     isset($event_date)?$event_date:$event_date= "";
     isset($lab_code)?$lab_code:$lab_code= "";
     isset($case_no)?$case_no:$case_no= "";
@@ -76,7 +79,7 @@ if (array_key_exists('confirm_submit', $_POST))   {
     isset($ptype_tva)?$ptype_tva:$ptype_tva= 0;
     isset($ptype_va)?$ptype_va:$ptype_va= 0;
     isset($flg_dx)?$flg_dx:$flg_dx= 0;
-    isset($flg_no_discrep)?$flg_no_discrep:$flg_no_discrep= 0;
+    isset($flg_no_discrep)?$flg_no_discrep:$flg_no_discrep= 1;
     isset($flg_no_q_spec)?$flg_no_q_spec:$flg_no_q_spec= 0;
     isset($flg_num_polyps)?$flg_num_polyps:$flg_num_polyps= 0;
     isset($flg_site_discrep)?$flg_site_discrep:$flg_site_discrep= 0;
@@ -94,7 +97,7 @@ if (array_key_exists('confirm_submit', $_POST))   {
     isset($n_cancer)?$n_cancer:$n_cancer= 0;
     isset($ptype_fibroblast)?$ptype_fibroblast:$ptype_fibroblast= 0;
     isset($ptype_lymphoid)?$ptype_lymphoid:$ptype_lymphoid= 0;
-    isset($flg_assump)?$flg_assump:$flg_assump= 0;
+    isset($flg_assump)?$flg_assump:$flg_assump= null;
     isset($flg_multis)?$flg_multis:$flg_multis= 0;
     isset($flg_multisites)?$flg_multisites:$flg_multisites= 0;
     isset($flg_residual)?$flg_residual:$flg_residual= 0;
@@ -118,21 +121,29 @@ if (array_key_exists('confirm_submit', $_POST))   {
             $dxChecked = $dxChecked+1;
         }
     }
-    if ($dxChecked == 0) {
+    if ($dxChecked == 0 and $container != "99") {
         $errors = 1;
         $error_message="No diagnosis selected";
-        $error_class="text-danger text-center";
     }
-    if ($path_polyp_loc == "") {
+	if ($flg_no_discrep == "" && $flg_no_path_spec == "" && $flg_multis == "" && $flg_size_discrep == "" && $flg_residual == "" && $flg_multisites == "" && $flg_site_discrep == "" &&
+		$flg_no_q_spec == "" && $flg_path_sites == "" && $flg_num_polyps == "" && $flg_site_uncert == "") {
+		$errors = 1;
+		$error_message = "If no discrepancies, check 'no discrepancies'";
+		$error_class="text-danger text-center";
+	}
+    if ($path_polyp_loc == "" and $site_location_cm == "") {
         $errors = 1;
-        $error_message="No location selected";
-        $error_class="text-danger text-center";
+        $error_message="Must enter size or location";
     }
-    if ($size_mm == "") {
+    if ($polyp_num == "") {
         $errors = 1;
-        $error_message="No size entered";
-        $error_class="text-danger text-center";
+        $error_message="No polyp number entered";
     }
+	    if ($container == "") {
+        $errors = 1;
+        $error_message="No container entered";
+    }
+
 
     if ($errors == 0) {
         $record_complete = 1;
@@ -150,7 +161,7 @@ if (array_key_exists('confirm_submit', $_POST))   {
                     $container,
                     $other_dx_specify,
                     $site_location_cm,
-                    $size_mm,
+                    (int)$size_mm,
                     $flat_polyp,
                     $flg_no_path_spec,
                     $ptype_carcinoid,
@@ -208,6 +219,7 @@ if (array_key_exists('confirm_submit', $_POST))   {
                         $rows = pg_fetch_assoc( $result );
                         $specimen_id = $rows['lcl_specimen_id'];
                         $submit_message = $rows['lcl_message'];
+                        $warning_message = $rows['lcl_warning'];
                         $error_class="text-info text-center";
                     }
                 else
@@ -219,10 +231,6 @@ if (array_key_exists('confirm_submit', $_POST))   {
             echo 'ERROR: '.$e;
         }
     }
-    else {
-        $submit_message=$error_message;
-    }
-
 }
 
 if ($errors == 0 and $specimen_id != -9) {
@@ -239,8 +247,7 @@ if ($errors == 0 and $specimen_id != -9) {
     isset($action_by)?$action_by:$action_by= "";
     isset($specimen_id)?$specimen_id:$specimen_id= -9;
     isset($path_report_id)?$path_report_id:$path_report_id= "";
-    isset($event_id)?$event_id:$event_id= "";
-    isset($person_id)?$person_id:$person_id= "";
+    isset($batch_id)?$batch_id:$batch_id= "";
     isset($event_date)?$event_date:$event_date= "";
     isset($lab_code)?$lab_code:$lab_code= "";
     isset($case_no)?$case_no:$case_no= "";
@@ -275,7 +282,7 @@ if ($errors == 0 and $specimen_id != -9) {
     isset($ptype_tva)?$ptype_tva:$ptype_tva= 0;
     isset($ptype_va)?$ptype_va:$ptype_va= 0;
     isset($flg_dx)?$flg_dx:$flg_dx= 0;
-    isset($flg_no_discrep)?$flg_no_discrep:$flg_no_discrep= 0;
+    isset($flg_no_discrep)?$flg_no_discrep:$flg_no_discrep= 1;
     isset($flg_no_q_spec)?$flg_no_q_spec:$flg_no_q_spec= 0;
     isset($flg_num_polyps)?$flg_num_polyps:$flg_num_polyps= 0;
     isset($flg_site_discrep)?$flg_site_discrep:$flg_site_discrep= 0;
@@ -293,7 +300,7 @@ if ($errors == 0 and $specimen_id != -9) {
     isset($n_cancer)?$n_cancer:$n_cancer= 0;
     isset($ptype_fibroblast)?$ptype_fibroblast:$ptype_fibroblast= 0;
     isset($ptype_lymphoid)?$ptype_lymphoid:$ptype_lymphoid= 0;
-    isset($flg_assump)?$flg_assump:$flg_assump= 0;
+    isset($flg_assump)?$flg_assump:$flg_assump= null;
     isset($flg_multis)?$flg_multis:$flg_multis= 0;
     isset($flg_multisites)?$flg_multisites:$flg_multisites= 0;
     isset($flg_residual)?$flg_residual:$flg_residual= 0;
@@ -324,21 +331,21 @@ if ($errors == 0 and $specimen_id != -9) {
 </head>
 <body >
 <?php include("includes/header.php"); ?>
-<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off">
+<form class="form-horizontal" name="myform" id="myform" method="post" autocomplete="off" OnKeyPress="return disableEnterKey(event)">
 <input type="hidden" id="specimen_id" name="specimen_id" value="<?php echo $specimen_id; ?>"/>
 <input type="hidden" id="event_id" name="event_id" value="<?php echo $event_id; ?>"/>
 <input type="hidden" id="path_report_id" name="path_report_id" value="<?php echo $path_report_id; ?>"/>
-<div class="container">
+<div class="container-fluid">
     <div class="text">
         <h3>POLYP </h3>
-        Specimen ID:<?php echo $specimen_id; ?><br>
-        Path Report ID:<?php echo $path_report_id; ?><br>
-        Last Update: <?php echo $action_on.' - ' .$action_by; ?><br><br>
+        <b>Specimen ID:</b><?php echo $specimen_id; ?> <b>Path Report ID:</b><?php echo $path_report_id; ?> <b>Batch ID:</b><?php echo $batch_id; ?> </b>
+        <b>Last Update:</b> <?php echo $action_on.' - ' .$action_by; ?>
     </div>
-<?php   if(    isset($submit_message))    {    
-    echo '<div class="'.$error_class.'"><h2>'.$submit_message.'</h2></div>'; 
+<?php   if(isset($submit_message))    {    
+    echo '<div class="text-info text-center bg-info h3">'.$submit_message.'</div>'; 
+    echo '<div class="text-center bg-danger h3">'.$error_message.'</div>'; 
+    echo '<div class="text-center bg-warning h3">'.$warning_message.'</div>'; 
 } ?>
-<br><br>
     <div class="form-group row">
         <label class="control-label col-md-1" for="person_id">Person ID</label>
         <div class="col-md-1">
@@ -348,29 +355,21 @@ if ($errors == 0 and $specimen_id != -9) {
         <div class="col-md-2">
             <input type="date" name="event_date" class="form-control" id="event_date" value="<?php echo $event_date; ?>" readonly>
         </div>
-        <label class="control-label col-md-1" for="case_no">Case</label>
-        <div class="col-md-2">
-            <input type="text" class="form-control" name="case_no" id="case_no" value="<?php echo $case_no;?>" readonly>
-        </div>
-        <label class="control-label col-md-1" for="lab_code">Lab</label>
-        <div class="col-md-2">
-            <input type="text" class="form-control" name="lab_code" id="lab_code" value="<?php echo $lab_code;?>" readonly>
-        </div>
     </div>
     <div class="form-group row">
         <label class="control-label col-md-1" for="polyp_num">Polyp Num</label>
         <div class="col-md-1">
-            <input type="text" name="polyp_num" class="form-control" id="polyp_num" value="<?php echo $polyp_num; ?>">
+            <input type="text" name="polyp_num" class="form-control text-capitalize" id="polyp_num" value="<?php echo $polyp_num; ?>">
         </div>
         <label class="control-label col-md-1" for="container">Container</label>
         <div class="col-md-1">
-            <input type="text" name="container" class="form-control" id="container" value="<?php echo $container; ?>">
+            <input type="text" name="container" class="form-control text-capitalize" id="container" value="<?php echo $container; ?>">
         </div>
         <label class="control-label col-md-2" for="no_q_form">No Procedure Form</label> 
         <div class="checkbox col-md-1">
             <input type="checkbox" name="no_q_form" id="no_q_form" value="1" <?php echo $no_q_form=="1"?"checked":""; ?> disabled> 
         </div>
-        <label class="control-label col-md-2" for ="q_form_incomplete">Procedure form missing polyp level data</label> 
+        <label class="control-label col-md-3" for ="q_form_incomplete">Procedure form missing polyp level data</label> 
         <div class="checkbox col-md-1">
             <input type="checkbox" name="q_form_incomplete" id="q_form_incomplete" value="1" <?php echo $q_form_incomplete=="1"?"checked":""; ?> disabled>
         </div>
@@ -378,7 +377,7 @@ if ($errors == 0 and $specimen_id != -9) {
     <div class="form-group row">
         <label class="control-label col-md-1" for="site_location_cm">Location cm</label>
         <div class="col-md-1">
-            <input type="text" name="site_location_cm" class="form-control" id="site_location_cm" value="<?php echo $site_location_cm; ?>">
+            <input type="number" name="site_location_cm" class="form-control" id="site_location_cm" value="<?php echo $site_location_cm; ?>">
         </div>
         <label class="control-label col-md-1" for ="path_polyp_loc"> Anatomical Loc</label> 
         <div class="col-md-2">
@@ -404,6 +403,13 @@ if ($errors == 0 and $specimen_id != -9) {
                         echo "selected=\"selected\""; 
                     }
                 ?>>CE
+                </option>
+                <option value="CO" 
+                <?php 
+                    if($path_polyp_loc=='CO'){
+                        echo "selected=\"selected\""; 
+                    }
+                ?>>CO
                 </option>
                 <option value="DC" 
                 <?php 
@@ -482,7 +488,7 @@ if ($errors == 0 and $specimen_id != -9) {
     <div class="form-group row">
         <label class="control-label col-md-1">Polyp size mm</label>
         <div class="col-md-1">
-            <input type="text" name="size_mm" class="form-control" id="size_mm" value="<?php echo $size_mm; ?>">
+            <input type="number" name="size_mm" class="form-control" id="size_mm" min="1" value="<?php echo $size_mm; ?>">
         </div>
         <label class="control-label col-md-1" for ="flat_polyp">Flat polyp</label> 
         <div class="checkbox col-md-1">
@@ -500,59 +506,55 @@ if ($errors == 0 and $specimen_id != -9) {
     <hr>
     <h4> DISCREPANCIES</h4>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_no_discrep">No Discrepancies</label> 
+        <label class="control-label col-md-3" for="flg_no_discrep">No Discrepancies</label> 
         <div class="checkbox col-md-1">
             <input type="checkbox" name="flg_no_discrep" id="flg_no_discrep" value="1" <?php echo $flg_no_discrep=="1"?"checked":""; ?>>
         </div>
-        <label class="control-label col-md-3" for ="flg_residual">Residual Polyp</label> 
+        <label class="control-label col-md-3" for ="flg_no_path_spec" >No Path Specimen</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_residual" id="flg_residual" value="1" <?php echo $flg_residual=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_no_path_spec" id="flg_no_path_spec" value="1" class="discrepancy"<?php echo $flg_no_path_spec=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="flg_multis">Multiple polyps in a container</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="flg_multis" id="flg_multis" value="1" class="discrepancy"<?php echo $flg_multis=="1"?"checked":""; ?>>
         </div>
     </div>
     <div class="form-group row">
         <label class="control-label col-md-3" for ="flg_size_discrep">Size Discrepancy</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_size_discrep" id="flg_size_discrep" value="1" <?php echo $flg_size_discrep=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_size_discrep" id="flg_size_discrep" value="1" class="discrepancy"<?php echo $flg_size_discrep=="1"?"checked":""; ?>>
         </div>
-        <label class="control-label col-md-3" for ="flg_no_q_spec">No Q Specimen</label> 
+        <label class="control-label col-md-3" for ="flg_residual">Residual Polyp</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_no_q_spec" id="flg_no_q_spec" value="1" <?php echo $flg_no_q_spec=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_residual" id="flg_residual" value="1" class="discrepancy"<?php echo $flg_residual=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="flg_multisites">Polyps from multiple locations in a container</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="flg_multisites" id="flg_multisites" value="1" class="discrepancy"<?php echo $flg_multisites=="1"?"checked":""; ?>>
         </div>
     </div>
     <div class="form-group row">
         <label class="control-label col-md-3" for ="flg_site_discrep">Site Discrepancy</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_site_discrep" id="flg_site_discrep" value="1" <?php echo $flg_site_discrep=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_site_discrep" id="flg_site_discrep" value="1" class="discrepancy"<?php echo $flg_site_discrep=="1"?"checked":""; ?>>
         </div>
-        <label class="control-label col-md-3" for ="flg_site_uncert">Not certain polyp location is accurate</label> 
+        <label class="control-label col-md-3" for ="flg_no_q_spec">No Q Specimen</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_site_uncert" id="flg_site_uncert" value="1" <?php echo $flg_site_uncert=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_no_q_spec" id="flg_no_q_spec" value="1" class="discrepancy"<?php echo $flg_no_q_spec=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="flg_path_sites">Conflicting polyp location on path report</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="flg_path_sites" id="flg_path_sites" value="1" class="discrepancy"<?php echo $flg_path_sites=="1"?"checked":""; ?>>
         </div>
     </div>
     <div class="form-group row">
         <label class="control-label col-md-3" for ="flg_num_polyps">? Number of Polyps</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_num_polyps" id="flg_num_polyps" value="1" <?php echo $flg_num_polyps=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_num_polyps" id="flg_num_polyps" value="1" class="discrepancy"<?php echo $flg_num_polyps=="1"?"checked":""; ?>>
         </div>
-        <label class="control-label col-md-3" for ="flg_multis">Multiple polyps in a container</label> 
+        <label class="control-label col-md-3" for ="flg_site_uncert">Not certain polyp location is accurate</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_multis" id="flg_multis" value="1" <?php echo $flg_multis=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_no_path_spec">No Path Specimen</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_no_path_spec" id="flg_no_path_spec" value="1" <?php echo $flg_no_path_spec=="1"?"checked":""; ?>>
-        </div>
-        <label class="control-label col-md-3" for ="flg_multisites">Polyps from multiple locations in a container</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_multisites" id="flg_multisites" value="1" <?php echo $flg_multisites=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-7" for ="flg_path_sites">Conflicting polyp location on path report</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_path_sites" id="flg_path_sites" value="1" <?php echo $flg_path_sites=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_site_uncert" id="flg_site_uncert" value="1" class="discrepancy"<?php echo $flg_site_uncert=="1"?"checked":""; ?>>
         </div>
     </div>
     <hr>
@@ -562,55 +564,9 @@ if ($errors == 0 and $specimen_id != -9) {
         <div class="checkbox col-md-1">
             <input type="checkbox" name="ptype_norm_muc" id="ptype_norm_muc" value="1" <?php echo $ptype_norm_muc=="1"?"checked":""; ?>>
         </div>
-        <label class="control-label col-md-3" for ="ptype_inflam">Inflammatory Polyp</label> 
+        <label class="control-label col-md-3" for ="ptype_sa">Traditional Serrated Adenoma</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_inflam" id="ptype_inflam" value="1" <?php echo $ptype_inflam=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_ta">Tubular Adenoma</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_ta" id="ptype_ta" value="1" <?php echo $ptype_ta=="1"?"checked":""; ?>>
-        </div>
-        <label class="control-label col-md-3" for ="ptype_juvenile">Juvenile</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_juvenile" id="ptype_juvenile" value="1" <?php echo $ptype_juvenile=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_tva">Tubulovillous Adenoma</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_tva" id="ptype_tva" value="1" <?php echo $ptype_tva=="1"?"checked":""; ?>>
-        </div>
-        <label class="control-label col-md-3" for ="ptype_lelomyoma">Leiomyoma</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_lelomyoma" id="ptype_lelomyoma" value="1" <?php echo $ptype_lelomyoma=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_va">Villous Adenoma</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_va" id="ptype_va" value="1" <?php echo $ptype_va=="1"?"checked":""; ?>>
-        </div>
-        <label class="control-label col-md-3" for ="ptype_lymphoid">Lymphoid Polyp</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_lymphoid" id="ptype_lymphoid" value="1" <?php echo $ptype_lymphoid=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="hgd">? High Grade Dysplasia/Intramucosal Carcinoma</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="hgd" id="hgd" value="1" <?php echo $hgd=="1"?"checked":""; ?>>
-        </div>
-        <label class="control-label col-md-3" for ="ptype_lipoma">Lipoma</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_lipoma" id="ptype_lipoma" value="1" <?php echo $ptype_lipoma=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="n_cancer">Cancer</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="n_cancer" id="n_cancer" value="1" <?php echo $n_cancer=="1"?"checked":""; ?>>
+            <input type="checkbox" name="ptype_sa" id="ptype_sa" value="1" <?php echo $ptype_sa=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ibd_lgdysp">Mucosal Low Grade Dysplasia (IBD)</label> 
         <div class="checkbox col-md-1">
@@ -618,9 +574,13 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="n_inv_ca">Invasive Cancer</label> 
+        <label class="control-label col-md-3" for ="ptype_ta">Tubular Adenoma</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="n_inv_ca" id="n_inv_ca" value="1" <?php echo $n_inv_ca=="1"?"checked":""; ?>>
+            <input type="checkbox" name="ptype_ta" id="ptype_ta" value="1" <?php echo $ptype_ta=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="ptype_carcinoid">Carcinoid</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_carcinoid" id="ptype_carcinoid" value="1" <?php echo $ptype_carcinoid=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ptype_mp">Mucosal Prolapse Polyp</label> 
         <div class="checkbox col-md-1">
@@ -628,9 +588,13 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_hp">Hyperplastic</label> 
+        <label class="control-label col-md-3" for ="ptype_tva">Tubulovillous Adenoma</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_hp" id="ptype_hp" value="1" <?php echo $ptype_hp=="1"?"checked":""; ?>>
+            <input type="checkbox" name="ptype_tva" id="ptype_tva" value="1" <?php echo $ptype_tva=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="ptype_fibroblast">Fibroblastic Polyp</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_fibroblast" id="ptype_fibroblast" value="1" <?php echo $ptype_fibroblast=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ptype_pautzjeg">Pautz Jeghers</label> 
         <div class="checkbox col-md-1">
@@ -638,9 +602,13 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_ssp">Sessile Serrated Adenoma/Polyp (SSA/P)</label> 
+        <label class="control-label col-md-3" for ="ptype_va">Villous Adenoma</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_ssp" id="ptype_ssp" value="1" <?php echo $ptype_ssp=="1"?"checked":""; ?>>
+            <input type="checkbox" name="ptype_va" id="ptype_va" value="1" <?php echo $ptype_va=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="ptype_ganglio">Ganglionueromatous</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_ganglio" id="ptype_ganglio" value="1" <?php echo $ptype_ganglio=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ptype_not_polyp">Not a Polyp</label> 
         <div class="checkbox col-md-1">
@@ -648,9 +616,13 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_mixed">SSA/P with dysplasia/Mixed Polyp</label> 
+        <label class="control-label col-md-3" for ="hgd">? High Grade Dysplasia/Intramucosal Carcinoma</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_mixed" id="ptype_mixed" value="1" <?php echo $ptype_mixed=="1"?"checked":""; ?>>
+            <input type="checkbox" name="hgd" id="hgd" value="1" <?php echo $hgd=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="ptype_hamart">Hamartomatous</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_hamart" id="ptype_hamart" value="1" <?php echo $ptype_hamart=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ibd_actcol">Colitis - Active</label> 
         <div class="checkbox col-md-1">
@@ -658,9 +630,13 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_sa">Traditional Serrated Adenoma</label> 
+        <label class="control-label col-md-3" for ="n_cancer">Cancer</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_sa" id="ptype_sa" value="1" <?php echo $ptype_sa=="1"?"checked":""; ?>>
+            <input type="checkbox" name="n_cancer" id="n_cancer" value="1" <?php echo $n_cancer=="1"?"checked":""; ?>>
+        </div>
+		<label class="control-label col-md-3" for ="ptype_inflam">Inflammatory Polyp</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_inflam" id="ptype_inflam" value="1" <?php echo $ptype_inflam=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ibd_chroncol">Colitis - Chronic</label> 
         <div class="checkbox col-md-1">
@@ -668,9 +644,13 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_carcinoid">Carcinoid</label> 
+        <label class="control-label col-md-3" for ="n_inv_ca">Invasive Cancer</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_carcinoid" id="ptype_carcinoid" value="1" <?php echo $ptype_carcinoid=="1"?"checked":""; ?>>
+            <input type="checkbox" name="n_inv_ca" id="n_inv_ca" value="1" <?php echo $n_inv_ca=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="ptype_juvenile">Juvenile</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_juvenile" id="ptype_juvenile" value="1" <?php echo $ptype_juvenile=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ibd_coloth">Colitis - Other</label> 
         <div class="checkbox col-md-1">
@@ -678,21 +658,27 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_fibroblast">Fibroblastic Polyp</label> 
+        <label class="control-label col-md-3" for ="ptype_hp">Hyperplastic</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_fibroblast" id="ptype_fibroblast" value="1" <?php echo $ptype_fibroblast=="1"?"checked":""; ?>>
+            <input type="checkbox" name="ptype_hp" id="ptype_hp" value="1" <?php echo $ptype_hp=="1"?"checked":""; ?>>
         </div>
-
+        <label class="control-label col-md-3" for ="ptype_lelomyoma">Leiomyoma</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_lelomyoma" id="ptype_lelomyoma" value="1" <?php echo $ptype_lelomyoma=="1"?"checked":""; ?>>
+        </div>
         <label class="control-label col-md-3" for ="ibd_inactcol">Colititis - Inactive</label> 
         <div class="checkbox col-md-1">
             <input type="checkbox" name="ibd_inactcol" id="ibd_inactcol" value="1" <?php echo $ibd_inactcol=="1"?"checked":""; ?>>
         </div>
-
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_ganglio">Ganglionueromatous</label> 
+        <label class="control-label col-md-3" for ="ptype_ssp">Sessile Serrated Adenoma/Polyp (SSA/P)</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_ganglio" id="ptype_ganglio" value="1" <?php echo $ptype_ganglio=="1"?"checked":""; ?>>
+            <input type="checkbox" name="ptype_ssp" id="ptype_ssp" value="1" <?php echo $ptype_ssp=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-3" for ="ptype_lymphoid">Lymphoid Polyp</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_lymphoid" id="ptype_lymphoid" value="1" <?php echo $ptype_lymphoid=="1"?"checked":""; ?>>
         </div>
         <label class="control-label col-md-3" for ="ibd_ibd">Inflammatory Bowel Disease</label> 
         <div class="checkbox col-md-1">
@@ -700,18 +686,23 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="ptype_hamart">Hamartomatous</label> 
+        <label class="control-label col-md-3" for ="ptype_mixed">SSA/P with dysplasia/Mixed Polyp</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="ptype_hamart" id="ptype_hamart" value="1" <?php echo $ptype_hamart=="1"?"checked":""; ?>>
+            <input type="checkbox" name="ptype_mixed" id="ptype_mixed" value="1" <?php echo $ptype_mixed=="1"?"checked":""; ?>>
         </div>
+        <label class="control-label col-md-3" for ="ptype_lipoma">Lipoma</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="ptype_lipoma" id="ptype_lipoma" value="1" <?php echo $ptype_lipoma=="1"?"checked":""; ?>>
+        </div>
+    </div>
+    <div class="form-group row">
         <label class="control-label col-md-3" for ="ptype_other">Other Diagnosis</label> 
         <div class="checkbox col-md-1">
             <input type="checkbox" name="ptype_other" id="ptype_other" value="1" <?php echo $ptype_other=="1"?"checked":""; ?>>
         </div>
-        <label class="control-label col-md-1" for ="other_dx_specify">Specify</label> 
         <div class="col-md-3">
             <select name="other_dx_specify" class="form-control" id = "other_dx_specify">
-                <option value="">Make selection:</option>
+                <option value="">Make selection</option>
                 <?php
                     foreach ($other_spec as $v) {
                 ?>
@@ -733,53 +724,39 @@ if ($errors == 0 and $specimen_id != -9) {
     <hr>
     <h4> ASSUMPTIONS</h4>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_dx_multis">Diagnosis(es) assigned to all polyps in container</label> 
+        <label class="control-label col-md-4" for ="flg_dx_multis">Diagnosis(es) assigned to all polyps in container</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_dx_multis" id="flg_dx_multis" value="1" <?php echo $flg_dx_multis=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_dx_multis" id="flg_dx_multis" value="1" class="assumption"<?php echo $flg_dx_multis=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-4" for ="flg_dx">Cannot be certain that diagnosis applies to this polyp</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="flg_dx" id="flg_dx" value="1" class="assumption"<?php echo $flg_dx=="1"?"checked":""; ?>>
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_dx_size">Diagnosis assigned by size</label> 
+        <label class="control-label col-md-4" for ="flg_dx_size">Diagnosis assigned by size</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_dx_size" id="flg_dx_size" value="1" <?php echo $flg_dx_size=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_dx_size" id="flg_dx_size" value="1"  class="assumption"<?php echo $flg_dx_size=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-4" for ="flg_assump_numpolyps">Assumption of 1 polyp in container</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="flg_assump_numpolyps" id="flg_assump_numpolyps" value="1"  class="assumption"<?php echo $flg_assump_numpolyps=="1"?"checked":""; ?>>
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_dx_site">Diagnosis assigned by location</label> 
+        <label class="control-label col-md-4" for ="flg_dx_site">Diagnosis assigned by location</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_dx_site" id="flg_dx_site" value="1" <?php echo $flg_dx_site=="1"?"checked":""; ?>>
+            <input type="checkbox" name="flg_dx_site" id="flg_dx_site" value="1" class="assumption" <?php echo $flg_dx_site=="1"?"checked":""; ?>>
+        </div>
+        <label class="control-label col-md-4" for ="flg_review">Slide review necessary</label> 
+        <div class="checkbox col-md-1">
+            <input type="checkbox" name="flg_review" id="flg_review" value="1" class="assumption" <?php echo $flg_review=="1"?"checked":""; ?>>
         </div>
     </div>
     <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_dx">Cannot by certain that diagnosis applies to this polyp</label> 
+        <label class="control-label col-md-4"> Assumptions made on assigning diagnosis</label> 
         <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_dx" id="flg_dx" value="1" <?php echo $flg_dx=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_assump_numpolyps">Assumption of 1 polyp in container</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_assump_numpolyps" id="flg_assump_numpolyps" value="1" <?php echo $flg_assump_numpolyps=="1"?"checked":""; ?>>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="control-label col-md-3" for ="flg_review">Slide review necessary</label> 
-        <div class="checkbox col-md-1">
-            <input type="checkbox" name="flg_review" id="flg_review" value="1" <?php echo $flg_review=="1"?"checked":""; ?>>
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label class="control-label col-md-3"> Assumptions made on assigning diagnosis</label> 
-        <div class="col-md-1">
-            <label class="radio">
-            <input type="radio" name="flg_assump" value="0" <?php echo $flg_assump=="0"?"checked":""; ?> >No
-            </label>
-        </div>
-        <div class="col-md-1">
-            <label class="radio">
-            <input type="radio" name="flg_assump" value="1" <?php echo $flg_assump=="1"?"checked":""; ?> >Yes
-            </label>
+            <input type="checkbox" name="flg_assump" id="flg_assump" value="1" <?php echo $flg_assump=="1"?"checked":""; ?>>
         </div>
     </div>
 
@@ -787,7 +764,7 @@ if ($errors == 0 and $specimen_id != -9) {
     <div class="form-group row">
         <label class="control-label col-md-1"> NOTES</label> 
         <div class="col-md-8">
-        <textarea rows="5" class="form-control" name="discrepnote" id="discrepnote"><?php echo $discrepnote;?> </textarea>
+        <textarea rows="2" class="form-control" name="discrepnote" id="discrepnote"><?php echo $discrepnote;?> </textarea>
         </div>
     </div>
 
@@ -798,8 +775,10 @@ if ($errors == 0 and $specimen_id != -9) {
         </div>
     </div>
 
-<?php   if(    isset($submit_message))    {    
-    echo '<div class="'.$error_class.'"><h2>'.$submit_message.'</h2></div>'; 
+<?php   if(isset($submit_message) || isset($error_message) || isset($warning_message))    {    
+    echo '<div class="text-info text-center bg-info h3">'.$submit_message.'</div>'; 
+    echo '<div class="text-center bg-danger h3">'.$error_message.'</div>'; 
+    echo '<div class="text-center bg-warning h3">'.$warning_message.'</div>'; 
 } ?>
 
     <div class="form-group row">
@@ -833,11 +812,9 @@ if ($errors == 0 and $specimen_id != -9) {
 
     <div class="form-group row">
         <div class="text-center">
-            <input type="submit" id="idsub" class="btn btn-primary" name="confirm_submit" value="Submit">
+            <input type="submit" id="idsub" class="btn btn-primary" name="confirm_submit" value="Save">
         </div>
     </div>
-
-
 </div>
 </form>
 <br/>
@@ -845,7 +822,8 @@ if ($errors == 0 and $specimen_id != -9) {
 <br />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script type="text/javascript" src="./js/bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/specimen.js"></script>
+<script type="text/javascript" src="./js/specimen_v4.js"></script>
+<script type="text/javascript" src="./js/corescript.js"></script>
 </body>
 </html>
 <?php

@@ -22,7 +22,7 @@ authenticate();
  */
 
 // DB table to use
-$table = 'person';
+$table = 'vperson_tbl';
  
 // Table's primary key
 $primaryKey = 'person_id';
@@ -42,10 +42,28 @@ $columns = array(
             return 'row_'.$d;
         }
     ),
-    array( 'db' => 'person_id', 'dt' => 0 ),
-    array( 'db' => 'last_name',  'dt' => 1 ),
-    array( 'db' => 'first_name',   'dt' => 2 ),
-    array( 'db' => 'dob',   'dt' => 3 )
+    array( 'db' => 'person_id',     'dt' => 0 ),
+    array( 'db' => 'inserted_on',   'dt' => 1,
+            'formatter' => function( $d, $row ) {
+                if (strtotime($d) != '') {
+                    return date( 'm/d/Y', strtotime($d));
+                } else {
+                    return '';
+                }
+            }
+        ),
+    array( 'db' => 'last_name',     'dt' => 2 ),
+    array( 'db' => 'first_name',    'dt' => 3 ),
+    array( 'db' => 'dob',   'dt' => 4,
+            'formatter' => function( $d, $row ) {
+                if (strtotime($d) != '') {
+                    return date( 'm/d/Y', strtotime($d));
+                } else {
+                    return '';
+                }
+            }
+        ),
+    array( 'db' => 'ssn',   'dt' => 5),
 );
  
 // SQL server connection information

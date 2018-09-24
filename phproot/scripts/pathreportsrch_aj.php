@@ -25,7 +25,7 @@ authenticate();
 $table = 'vPathReportSrch';
  
 // Table's primary key
-$primaryKey = 'person_id';
+$primaryKey = 'event_id';
  
 // Array of database columns which should be read and sent back to DataTables.
 // The `db` parameter represents the column name in the database, while the `dt`
@@ -50,9 +50,7 @@ $columns = array(
     array( 'db' => 'middle_name', 'dt' => 'middle_name' ),
     array( 'db' => 'dob', 'dt' => 'dob' ),
     array( 'db' => 'event_date', 'dt' => 'event_date' ),
-    array( 'db' => 'medical_record_number', 'dt' => 'medical_record_number'),
-    array( 'db' => 'facility_name', 'dt' => 'facility_name' ),
-    array( 'db' => 'facility_id', 'dt' => 'facility_id' )
+    array( 'db' => 'facility_id', 'dt' => 'facility_id')
 );
  
 // SQL server connection information

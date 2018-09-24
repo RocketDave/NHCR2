@@ -22,7 +22,7 @@ authenticate();
  */
  
 // DB table to use
-$table = 'vPathRequests';
+$table = 'vpathrequest_p';
  
 // Table's primary key
 $primaryKey = 'path_request_id';
@@ -43,9 +43,10 @@ $columns = array(
         }
     ),
     array( 'db' => 'path_request_id', 'dt' => 0 ),
-    array( 'db' => 'event_id', 'dt' => 1 ),
-    array( 'db' => 'print_date', 'dt' => 2 ),
-    array( 'db' => 'recvd_date',  'dt' => 3 )
+    array( 'db' => 'facility_name', 'dt' => 1 ),
+    array( 'db' => 'event_id', 'dt' => 2 ),
+    array( 'db' => 'print_date', 'dt' => 3 ),
+    array( 'db' => 'recvd_date',  'dt' => 4 )
 );
  
 

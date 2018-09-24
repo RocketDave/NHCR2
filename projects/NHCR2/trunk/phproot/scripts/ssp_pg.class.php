@@ -178,8 +178,6 @@ class SSP {
 			 $where
 			 $order
 			 $limit";
-		//Debug
-		//echo "Consulta para la tabla: $select<br>";
     	$result = pg_query( $db, $select ) or SSP::fatal("Error .\n". pg_last_error()."\n $select");
     	$data = pg_fetch_all($result);
 		
@@ -196,7 +194,7 @@ class SSP {
 		}else{
 			$where = "";
 		}
-		$resTotalLength = pg_query( $db,"SELECT COUNT({$primaryKey}) cuenta FROM $table $where" );
+		$resTotalLength = pg_query( $db,"SELECT COUNT({$primaryKey}) FROM $table $where" );
 		$recordsTotalRow = pg_fetch_row($resTotalLength);
 		$recordsTotal = $recordsTotalRow[0];
 		pg_free_result( $result );
@@ -223,11 +221,16 @@ class SSP {
 	 */
 	static function pg_connect( $pg_details )
 	{
-		$db =  pg_connect("
-			host={$pg_details['host']} 
-			dbname={$pg_details['db']} 
-			user={$pg_details['user']} 
-			password={$pg_details['pass']}") or SSP::fatal("Error on connection a DB.\n". pg_last_error()) ;
+		try {
+			$db = connect();
+			if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+				$_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+				header('Location: Login.php');
+			}
+		}
+		catch (Exception $e) {
+			$session->info['message'] = $e->getMessage();
+		}
         pg_set_client_encoding($db, "UNICODE");
 		return $db;
 	}

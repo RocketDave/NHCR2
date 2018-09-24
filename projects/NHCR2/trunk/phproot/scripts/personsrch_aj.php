@@ -44,13 +44,20 @@ $columns = array(
     ),
     array( 'db' => 'person_id', 'dt' => 'person_id'),
     array( 'db' => 'ssn', 'dt' => 'ssn'),
-    array( 'db' => 'medical_record_number', 'dt' => 'medical_record_number'),
-    array( 'db' => 'dob', 'dt' => 'dob' ),
+    array(
+            'db'        => 'dob',
+            'dt'        => 'dob',
+            'formatter' => function( $d, $row ) {
+                if (strtotime($d) != '') {
+                    return date( 'm/d/Y', strtotime($d));
+                } else {
+                    return '';
+                }
+            }
+        ),
     array( 'db' => 'last_name', 'dt' => 'last_name' ),
     array( 'db' => 'first_name', 'dt' => 'first_name' ),
-    array( 'db' => 'middle_name', 'dt' => 'middle_name' ),
-    array( 'db' => 'address1', 'dt' => 'address1' ),
-    array( 'db' => 'city', 'dt' => 'city' )
+    array( 'db' => 'middle_name', 'dt' => 'middle_name' )
 );
  
 // SQL server connection information

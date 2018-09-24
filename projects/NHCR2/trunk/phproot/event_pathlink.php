@@ -3,10 +3,16 @@
 require_once("includes/Project.php");
 authenticate();
 
-/* Making the database connection here becuase it is going to be used to load the dropdown menus    */
 $conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
+
 $current_date = date("m/d/Y");
 $submit_message = "";
+$error_message = "";
+$errors = 0;
 
 isset($_POST['event_id'])?$event_id=$_POST['event_id']:$event_id="";
 isset($_POST['person_id'])?$person_id=$_POST['person_id']:$person_id="";
@@ -42,7 +48,18 @@ if (array_key_exists('confirm_submit', $_POST))   {
     isset($est_exam_date)?$est_exam_date:$est_exam_date=0;
     isset($comments)?$comments:$comments="";
 
-    try{
+    if ($event_date == "") {
+        $errors = 1;
+        $error_message = 'Please enter the exam date.';
+    }
+
+    if ($endo_code == 0) {
+        $errors = 1;
+        $error_message = 'Please select an endoscopist';
+    }
+
+    if ($errors == 0) {
+        try{
             $stmt = pg_prepare($conn,"the_query","select * from public.set_event_pathlink($1,$2,$3,$4,$5,$6,$7)");
             if ($stmt) {
                 $result = pg_execute($conn,"the_query", array(
@@ -56,28 +73,33 @@ if (array_key_exists('confirm_submit', $_POST))   {
                     )
                 );
                 if($result) {
-                        $rows = pg_fetch_assoc( $result );
-                        $event_id = $rows['lcl_event_id'];
-                        $submit_message = $rows['lcl_message'];
+                    $rows = pg_fetch_assoc( $result );
+                    $event_id = $rows['lcl_event_id'];
+                    $submit_message = $rows['lcl_message'];
+                    if ($submit_message != 'record saved') {
+                        $errors = 1;
+                        }
                     }
                 else
                     throw new Exception(pg_last_error($conn));
             } else    {
                     throw new Exception(pg_last_error($conn));
                 }
-    }    catch(Exception $e)    {
-        echo 'ERROR: '.$e;
+        }    catch(Exception $e)    {
+            echo 'ERROR: '.$e;
+            }
     }
 }
+if ($errors == 0) {
+    $result = pg_query("select * from vEvents where event_id = '" . $event_id . "'");
 
-$result = pg_query("select * from vEvents where event_id = '" . $event_id . "'");
-
-while($row = pg_fetch_array($result)){
-    foreach ($row as $key => $value) {
-        /* assign to var (strip whitespace if 2t an array)    */
-        ${$key} = is_array($value) ? $value : trim($value);
+    while($row = pg_fetch_array($result)){
+        foreach ($row as $key => $value) {
+            /* assign to var (strip whitespace if 2t an array)    */
+            ${$key} = is_array($value) ? $value : trim($value);
+        }
     }
-}
+
     isset($action_on)?$action_on:$action_on="";
     isset($action_by)?$action_by:$action_by="";
     isset($event_id)?$event_id:$event_id="";
@@ -87,6 +109,7 @@ while($row = pg_fetch_array($result)){
     isset($endo_code)?$endo_code:$endo_code=-9;
     isset($est_exam_date)?$est_exam_date:$est_exam_date=0;
     isset($comments)?$comments:$comments="";
+}
 
 ?>
 <!DOCTYPE html>
@@ -110,9 +133,14 @@ while($row = pg_fetch_array($result)){
 
 <div class="container-fluid">
 <?php   if(isset($submit_message))    {    
-    echo '<div class="text-info text-center bg-info h3">'.$submit_message.'</div>'; 
-    } ?>
-    <h4> Visit Information</h4>
+            echo '<div class="text-center bg-info h3">'.$submit_message.'</div>'; 
+        } 
+        if(isset($error_message))    {    
+            echo '<div class="text-center bg-warning h3">'.$error_message.'</div>'; 
+        }         
+        
+        ?>
+    <h3> Event Information</h3>
     <div>
         EVENT ID:<?php echo $event_id; ?><br>
         Last Update: <?php echo $action_on;?><br>
@@ -164,12 +192,19 @@ while($row = pg_fetch_array($result)){
         <textarea rows="5" class="form-control" name="comments"><?php echo $comments;?> </textarea>
         </div>
     </div>
+<?php if ($event_id != '-9') { echo  '
     <div class="text-center form-group row">
         <input type="button" id="new_path" class="btn-link" value="Return to Path Report">
-    </div>
+    </div>';
+    } else {echo '
+    <div class="text-center form-group row">
+        <a href="pathreportsrch.php">Return to Path Entry</a>
+    </div>';
+    }
+?>
     <div class="text-center">
-        <input type="submit" id="idsub" class="btn-primary" name="confirm_submit" value="Submit">
-    </div>
+        <input type="submit" id="idsub" class="btn-primary" name="confirm_submit" value="Save">
+    </div>';
 
 </div>
 </form>
@@ -178,7 +213,7 @@ while($row = pg_fetch_array($result)){
 <br />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="./js/event_pathlink.js"></script>
+<script type="text/javascript" src="./js/event_pathlink_v3.js"></script>
 </body>
 </html>
 <?php

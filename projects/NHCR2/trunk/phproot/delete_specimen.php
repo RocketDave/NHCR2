@@ -1,9 +1,13 @@
 <?php
+/* Check to see if person accessing this page is logged in.    */
 require_once("includes/Project.php");
 authenticate();
 
-/* Making the database connection here becuase it is going to be used to load the dropdown menus    */
 $conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
 
 isset($_POST['specimen_id'])?$specimen_id=$_POST['specimen_id']:$specimen_id="";
 isset($_POST['path_report_id'])?$path_report_id=$_POST['path_report_id']:$path_report_id="";

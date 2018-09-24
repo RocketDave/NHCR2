@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="css/project_styles.css" type="text/css">
 <script type="text/JavaScript">
-window.location = "Dashboard.php"
+window.location = "dashboard.php"
 </script>
 </head>
 <body>

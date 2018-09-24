@@ -1,16 +1,19 @@
 <?php
+/* Check to see if person accessing this page is logged in.    */
 require_once("includes/Project.php");
 authenticate();
 
-/* Making the database connection here becuase it is going to be used to load the dropdown menus    */
 $conn = connect();
+if(!in_array('nhcr2_rc', $_SESSION['user_role_array'])) {
+    $_SESSION['ERRORS'] = 'You are not an authorized user of this site.';
+    header('Location: Login.php');
+}
 
 isset($_GET['q'])?$pathologist_code=$_GET['q']:$pathologist_code="";
 isset($_GET['f'])?$lab_code=$_GET['f']:$lab_code="";
 isset($_GET['t'])?$type_r=$_GET['t']:$type_r="";
 
 if ($type_r=='del') {
-    echo 'IM HERE';
     $result = pg_query("delete from pathlab_pathologist where pathlab_code = '" . $lab_code . "' and pathologist_code = '" . $pathologist_code . "'");
 };
 if ($type_r=='add') {
